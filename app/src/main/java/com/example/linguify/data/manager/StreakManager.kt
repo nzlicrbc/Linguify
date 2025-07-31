@@ -32,6 +32,10 @@ class StreakManager @Inject constructor(
 
         if (lastActivityDate == today) return
 
+        val currentStreak = getCurrentStreak()
+        val newStreak = calculateNewStreak(lastActivityDate, today, currentStreak)
+
+        saveCurrentStreak(newStreak)
         saveLastActivityDate(today)
     }
 
@@ -45,6 +49,44 @@ class StreakManager @Inject constructor(
     private fun saveLastActivityDate(date: String) {
         sharedPreferences.edit()
             .putString(getUserSpecificKey(Constants.KEY_LAST_ACTIVITY_DATE), date).apply()
+    }
+
+    private fun calculateNewStreak(lastDate: String, today: String, currentStreak: Int): Int {
+        if(lastDate.isEmpty()) return 1
+        return if(isConsecutiveDay(lastDate, today)) {
+            currentStreak +1
+        } else {
+            1
+        }
+    }
+
+    private fun isConsecutiveDay(lastDate: String, today: String): Boolean {
+        if(lastDate.isEmpty()) return false
+
+        try {
+            val lastDateObj = dateFormat.parse(lastDate) ?: return false
+            val todayDateObj = dateFormat.parse(today) ?: return false
+
+            val diffInMillis = todayDateObj.time - lastDateObj.time
+            val diffInDays = diffInMillis / (24 * 60 * 60 * 1000)
+
+            return diffInDays == 1L
+        } catch (e: Exception) {
+            return false
+
+        }
+    }
+
+    fun getCurrentStreak(): Int {
+        return sharedPreferences.getInt(
+            getUserSpecificKey(Constants.KEY_CURRENT_STREAK),
+            0
+        )
+    }
+
+    private fun saveCurrentStreak(streak: Int) {
+        sharedPreferences.edit()
+            .putInt(getUserSpecificKey(Constants.KEY_CURRENT_STREAK), streak).apply()
     }
 }
 
