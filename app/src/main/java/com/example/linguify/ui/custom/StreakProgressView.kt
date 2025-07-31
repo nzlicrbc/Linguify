@@ -102,4 +102,72 @@ class StreakProgressView @JvmOverloads constructor(
     private fun Int.dpToPx(): Int {
         return (this * context.resources.displayMetrics.density).toInt()
     }
+
+    fun updateStreakData(weeklyStreak: List<Boolean>, currentStreak: Int) {
+        updateStreakCount(currentStreak)
+        updateDayIndicators(weeklyStreak)
+    }
+
+    private fun updateStreakCount(streak: Int) {
+        binding.tvStreakCount.text = when {
+            streak == 0 -> "Streak başlat!"
+            streak == 1 -> "1 gün streak"
+            else -> "$streak gün streak"
+        }
+    }
+
+    private fun updateDayIndicators(weeklyStreak: List<Boolean>) {
+        if (weeklyStreak.size != dayIndicators.size) return
+
+        weeklyStreak.forEachIndexed { index, isActive ->
+            val indicator = dayIndicators[index]
+            updateIndicatorState(indicator, isActive, index)
+        }
+    }
+
+    private fun updateIndicatorState(indicator: ImageView, isActive: Boolean, index: Int) {
+        val targetDrawable = if (isActive) {
+            addLogoToActiveIndicator(indicator)
+        } else {
+            R.drawable.day_indicator_inactive
+        }
+
+        indicator.animate()
+            .scaleX(0.9f)
+            .scaleY(0.9f)
+            .setDuration(100)
+            .withEndAction {
+                indicator.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(150)
+                    .start()
+            }
+            .start()
+    }
+
+    private fun addLogoToActiveIndicator(indicator: ImageView) {
+        try {
+            val activeBackground = ContextCompat.getDrawable(context, R.drawable.day_indicator_active)
+            val logoDrawable = ContextCompat.getDrawable(context, R.drawable.ic_app_logo)
+
+            if (activeBackground != null && logoDrawable != null) {
+                val layerDrawable = android.graphics.drawable.LayerDrawable(
+                    arrayOf(activeBackground, logoDrawable)
+                )
+
+                val logoSize = 16.dpToPx()
+                val circleSize = 32.dpToPx()
+                val padding = (circleSize - logoSize) / 2
+
+                layerDrawable.setLayerInset(1, padding, padding, padding, padding)
+
+                indicator.setImageDrawable(layerDrawable)
+            } else {
+                indicator.setImageResource(R.drawable.day_indicator_active)
+            }
+        } catch (e: Exception) {
+            indicator.setImageResource(R.drawable.day_indicator_active)
+        }
+    }
 }
