@@ -1,0 +1,75 @@
+<resources>
+    <string name="app_name">Linguify</string>
+    <!-- login screen -->
+    <string name="login">Log In</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="signup">Sign Up</string>
+    <string name="remember_me">Remember Me</string>
+
+    <!-- validation error messages -->
+    <string name="email_required">Email cannot be empty</string>
+    <string name="invalid_email">Invalid email format</string>
+    <string name="password_required">Password cannot be empty</string>
+    <string name="invalid_password">Password must be at least 6 characters</string>
+    <string name="error_username_length">Username must be at least 3 characters</string>
+    <string name="error_password_length">Password must be at least 6 characters</string>
+    <string name="error_password_mismatch">Passwords do not match</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="unknown_error">An error occurred</string>
+
+    <!-- login status messages -->
+    <string name="login_successful">Login successful</string>
+    <string name="login_failed">An error occurred during login</string>
+    <string name="welcome_message">Welcome, %1$s</string>
+
+    <!-- registration status messages -->
+    <string name="register_successful">Registration successful</string>
+    <string name="register_failed">Registration failed</string>
+
+    <!-- registration screen -->
+    <string name="register">Sign Up</string>
+    <string name="username">Username</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="already_have_account">Already have an account?</string>
+
+    <!-- forgot password screen -->
+    <string name="forgot_password_description">Enter your email address to reset your password</string>
+    <string name="back_to_login">Back to Login</string>
+    <string name="forgot_password_email_sent">Password reset email sent. Please check your email.</string>
+    <string name="password_reset_error">An error occurred</string>
+
+    <!-- bottom navigation titles -->
+    <string name="home">Home</string>
+    <string name="courses">Courses</string>
+    <string name="words">Words</string>
+    <string name="exercises">Exercises</string>
+    <string name="profile">Profile</string>
+    <string name="vocabulary">Vocabulary</string>
+    <string name="grammar">Grammar</string>
+
+    <!-- word list screen -->
+    <string name="status_known">Known</string>
+    <string name="status_to_learn">To Learn</string>
+    <string name="status_learning">Learning</string>
+    <string name="status_new">New</string>
+    <string name="favorite">Favorite</string>
+    <string name="search_hint">Search words...</string>
+
+    <!-- onboarding screen -->
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
+    <string name="get_started">Get Started</string>
+    <string name="onboarding_image_description">Onboarding illustration</string>
+
+    <string name="onboarding_title_1">Welcome!</string>
+    <string name="onboarding_description_1">Explore our curated collection of English learning materials designed to help you learn the language and immerse yourself in the culture.</string>
+
+    <string name="onboarding_title_2">Customized for Every Learner</string>
+    <string name="onboarding_description_2">From easy-to-read content for beginners to complex materials for advanced learners, we make it easy to find the right resources for you.</string>
+
+    <string name="onboarding_title_3">Enhance Learning!</string>
+    <string name="onboarding_description_3">Access helpful resources like dictionaries, grammar guides, and audiobooks to improve your English skills effectively.</string>
+</resources>

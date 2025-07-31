@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Margin Değerleri -->
+    <dimen name="margin_xxsmall">2dp</dimen>
+    <dimen name="margin_xsmall">4dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_medium">16dp</dimen>
+    <dimen name="margin_large">24dp</dimen>
+    <dimen name="margin_xlarge">32dp</dimen>
+    <dimen name="margin_xxlarge">48dp</dimen>
+    <dimen name="margin_xxxlarge">64dp</dimen>
+
+    <!-- Padding Değerleri -->
+    <dimen name="padding_xxsmall">2dp</dimen>
+    <dimen name="padding_xsmall">4dp</dimen>
+    <dimen name="padding_small">8dp</dimen>
+    <dimen name="padding_medium">16dp</dimen>
+    <dimen name="padding_large">24dp</dimen>
+    <dimen name="padding_xlarge">32dp</dimen>
+    <dimen name="padding_xxlarge">48dp</dimen>
+    <dimen name="padding_xxxlarge">64dp</dimen>
+
+    <!-- Text Boyutları -->
+    <dimen name="text_size_micro">10sp</dimen>
+    <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_medium">14sp</dimen>
+    <dimen name="text_size_default">16sp</dimen>
+    <dimen name="text_size_large">18sp</dimen>
+    <dimen name="text_size_xlarge">20sp</dimen>
+    <dimen name="text_size_xxlarge">24sp</dimen>
+    <dimen name="text_size_xxxlarge">28sp</dimen>
+    <dimen name="text_size_jumbo">34sp</dimen>
+    <dimen name="text_size_headline">40sp</dimen>
+
+    <!-- Yükseklik Değerleri -->
+    <dimen name="height_line">1dp</dimen>
+    <dimen name="height_divider">0.5dp</dimen>
+    <dimen name="height_button">48dp</dimen>
+    <dimen name="height_button_small">36dp</dimen>
+    <dimen name="height_button_large">56dp</dimen>
+    <dimen name="height_input">56dp</dimen>
+    <dimen name="height_toolbar">56dp</dimen>
+    <dimen name="height_bottom_nav">56dp</dimen>
+    <dimen name="height_tab">48dp</dimen>
+    <dimen name="height_app_bar">56dp</dimen>
+    <dimen name="height_card_small">80dp</dimen>
+    <dimen name="height_card_medium">120dp</dimen>
+    <dimen name="height_card_large">160dp</dimen>
+
+    <!-- Genişlik Değerleri -->
+    <dimen name="width_button_icon">48dp</dimen>
+    <dimen name="width_icon_small">24dp</dimen>
+    <dimen name="width_icon_medium">36dp</dimen>
+    <dimen name="width_icon_large">48dp</dimen>
+    <dimen name="width_max_button">280dp</dimen>
+    <dimen name="width_dialog">280dp</dimen>
+    <dimen name="width_max_content">800dp</dimen>
+
+    <!-- Yuvarlak Köşe Yarıçapları -->
+    <dimen name="radius_small">2dp</dimen>
+    <dimen name="radius_medium">4dp</dimen>
+    <dimen name="radius_large">8dp</dimen>
+    <dimen name="radius_xlarge">16dp</dimen>
+    <dimen name="radius_card">12dp</dimen>
+    <dimen name="radius_button">8dp</dimen>
+    <dimen name="radius_input">4dp</dimen>
+    <dimen name="radius_circle">1000dp</dimen>
+
+    <!-- Özel Bileşen Boyutları -->
+    <dimen name="avatar_size_small">32dp</dimen>
+    <dimen name="avatar_size_medium">48dp</dimen>
+    <dimen name="avatar_size_large">64dp</dimen>
+    <dimen name="avatar_size_xlarge">96dp</dimen>
+    <dimen name="avatar_size_xxlarge">120dp</dimen>
+
+    <!-- İlerleme Çubuğu Boyutları -->
+    <dimen name="progress_bar_height_small">2dp</dimen>
+    <dimen name="progress_bar_height_normal">4dp</dimen>
+    <dimen name="progress_bar_height_large">8dp</dimen>
+    <dimen name="progress_circle_size_small">24dp</dimen>
+    <dimen name="progress_circle_size_medium">36dp</dimen>
+    <dimen name="progress_circle_size_large">48dp</dimen>
+
+    <!-- Chip Boyutları -->
+    <dimen name="chip_height">32dp</dimen>
+    <dimen name="chip_text_padding">8dp</dimen>
+    <dimen name="chip_icon_size">18dp</dimen>
+    <dimen name="chip_radius">16dp</dimen>
+
+    <!-- Badge Boyutları -->
+    <dimen name="badge_size_small">16dp</dimen>
+    <dimen name="badge_size_medium">20dp</dimen>
+    <dimen name="badge_text_size">10sp</dimen>
+
+    <!-- Liste Öğesi Boyutları -->
+    <dimen name="list_item_height_small">48dp</dimen>
+    <dimen name="list_item_height_medium">64dp</dimen>
+    <dimen name="list_item_height_large">80dp</dimen>
+    <dimen name="list_item_vertical_margin">4dp</dimen>
+    <dimen name="list_item_horizontal_margin">16dp</dimen>
+
+    <!-- İçerik İç Boşluk -->
+    <dimen name="content_inset">16dp</dimen>
+    <dimen name="content_inset_small">8dp</dimen>
+    <dimen name="content_inset_large">24dp</dimen>
+
+    <!-- Çizim ve Grafik Boyutları -->
+    <dimen name="stroke_width_thin">0.5dp</dimen>
+    <dimen name="stroke_width_normal">1dp</dimen>
+    <dimen name="stroke_width_thick">2dp</dimen>
+    <dimen name="stroke_width_xlarge">4dp</dimen>
+
+    <!-- FAB Boyutları -->
+    <dimen name="fab_size_normal">56dp</dimen>
+    <dimen name="fab_size_mini">40dp</dimen>
+    <dimen name="fab_elevation">6dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+
+    <!-- Set göstergesi için boyutlar -->
+    <dimen name="set_indicator_block_size">16dp</dimen>
+    <dimen name="set_indicator_block_margin">2dp</dimen>
+
+</resources>

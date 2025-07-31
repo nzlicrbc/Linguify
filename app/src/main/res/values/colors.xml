@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Ana Renkler -->
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorAccent">#64B5F6</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <!-- Metin Renkleri -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#616161</color>
+    <color name="text_hint">#9E9E9E</color>
+
+    <!-- Arka Plan Renkleri -->
+    <color name="background_light">#F5F8FA</color>
+    <color name="background_dark">#E1E8ED</color>
+
+    <!-- Bildirim Renkleri -->
+    <color name="success">#4CAF50</color>
+    <color name="error">#F44336</color>
+    <color name="warning">#FFC107</color>
+    <color name="info">#2196F3</color>
+
+    <!-- Gri Paletleri -->
+    <color name="gray_50">#FAFAFA</color>
+    <color name="gray_100">#F5F5F5</color>
+    <color name="gray_200">#EEEEEE</color>
+    <color name="gray_300">#E0E0E0</color>
+    <color name="gray_400">#BDBDBD</color>
+    <color name="gray_500">#9E9E9E</color>
+    <color name="gray_600">#757575</color>
+    <color name="gray_700">#616161</color>
+    <color name="gray_800">#424242</color>
+    <color name="gray_900">#212121</color>
+
+    <!-- Daha önceki mor renkleri mavi tonlarına dönüştürme -->
+    <color name="purple_200">#90CAF9</color> <!-- Açık Mavi -->
+    <color name="purple_500">#2196F3</color> <!-- Orta Mavi -->
+    <color name="purple_700">#1976D2</color> <!-- Koyu Mavi -->
+    <color name="teal_200">#80DEEA</color>
+    <color name="teal_700">#0097A7</color>
+
+    <!-- Yeni UI renkler -->
+    <color name="primary_text_color">#212121</color>
+    <color name="secondary_text_color">#616161</color>
+    <color name="background_color">#F5F8FA</color>
+
+    <!-- Kelime durumu renkleri -->
+    <color name="status_known">#4CAF50</color>
+    <color name="status_to_learn">#2196F3</color> <!-- Mor yerine mavi -->
+    <color name="status_learning">#42A5F5</color> <!-- Daha açık mavi -->
+    <color name="status_new">#607D8B</color>
+
+    <!-- CEFR seviye renkleri -->
+    <color name="level_beginner">#78909C</color> <!-- Mavi-gri -->
+    <color name="level_intermediate">#2196F3</color>
+    <color name="level_advanced">#1565C0</color> <!-- Koyu mavi -->
+
+    <!-- Favoriler için renk -->
+    <color name="favorite_color">#2196F3</color> <!-- Mavi -->
+
+    <color name="primary">#2196F3</color>
+    <color name="gray">#757575</color>
+    <color name="light_gray">#E1E8ED</color>
+
+    <color name="indicator_selected">#2196F3</color>
+    <color name="indicator_unselected">#E0E0E0</color>
+
+    <!-- Modern UI için yeni renkler -->
+    <color name="card_background">#FFFFFF</color>
+    <color name="button_primary">#2196F3</color>
+    <color name="button_secondary">#E1E8ED</color>
+    <color name="dark_blue">#1565C0</color>
+    <color name="light_blue">#64B5F6</color>
+    <color name="input_background">#F5F8FA</color>
+    <color name="divider_color">#E1E8ED</color>
+</resources>
