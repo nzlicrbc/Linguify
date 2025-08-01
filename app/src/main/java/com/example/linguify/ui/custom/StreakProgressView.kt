@@ -4,16 +4,12 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.RectF
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.example.linguify.R
-import com.example.linguify.databinding.StreakProgressViewBinding
-import java.nio.file.Files.readAttributes
+import android.graphics.Path
 
 class StreakProgressView @JvmOverloads constructor(
     context: Context,
@@ -45,15 +41,19 @@ class StreakProgressView @JvmOverloads constructor(
     private val backgroundPaint = Paint()
     private val borderPaint = Paint()
 
+    private var currentStreak = 0
+    private var weeklyStreak = List(7) { false }
+    private val dayLabels = listOf("P", "S", "C", "P", "C", "C", "P")
+
     init {
         circleRadius = 16.dpToPx().toFloat()
         activeCircleColor = ContextCompat.getColor(context, R.color.primary_color)
         inactiveCircleColor = ContextCompat.getColor(context, R.color.border_light)
         connectorLineColor = ContextCompat.getColor(context, R.color.border_light)
         connectorLineWidth = 2.dpToPx().toFloat()
-        dayLabelTextSize = 10.sp
+        dayLabelTextSize = 10.spToPx()
         dayLabelTextColor = ContextCompat.getColor(context, R.color.secondary_text)
-        streakTextSize = 14.sp
+        streakTextSize = 14.spToPx()
         streakTextColor = ContextCompat.getColor(context, R.color.primary_text)
         streakBackgroundColor = ContextCompat.getColor(context, R.color.white)
         streakBorderColor = ContextCompat.getColor(context, R.color.border_light)
@@ -187,8 +187,53 @@ class StreakProgressView @JvmOverloads constructor(
         }
     }
 
-    private fun drawBackground(canvas: Canvas) { }
-    private fun drawStreakText(canvas: Canvas) { }
+    private fun drawBackground(canvas: Canvas) {
+        val rect = RectF(0f, 0f, width.toFloat(), height.toFloat())
+
+        canvas.drawRoundRect(rect, streakCornerRadius, streakCornerRadius, backgroundPaint)
+
+        canvas.drawRoundRect(rect, streakCornerRadius, streakCornerRadius, borderPaint)
+    }
+    private fun drawStreakText(canvas: Canvas) {
+        val fireIconX = 40.dpToPx().toFloat()
+        val textY = 30.dpToPx().toFloat()
+
+        drawFireIcon(canvas, fireIconX, textY)
+
+        val streakText = when {
+            currentStreak == 0 -> "Streak başlat!"
+            currentStreak == 1 -> "1 gün streak"
+            else -> "$currentStreak gün streak"
+        }
+
+        val streakTextPaint = Paint().apply {
+            color = streakTextColor
+            textSize = streakTextSize
+            textAlign = Paint.Align.LEFT
+            isAntiAlias = true
+            isFakeBoldText = true
+        }
+
+        canvas.drawText(streakText, fireIconX + 32.dpToPx(), textY + 5.dpToPx(), streakTextPaint)
+    }
+
+    private fun drawFireIcon(canvas: Canvas, x: Float, y: Float) {
+        val fireSize = 12.dpToPx().toFloat()
+        val firePaint = Paint().apply {
+            color = Color.parseColor("#FF5722")
+            style = Paint.Style.FILL
+            isAntiAlias = true
+        }
+
+        val path = Path().apply {
+            moveTo(x, y + fireSize)
+            lineTo(x - fireSize/2, y)
+            lineTo(x + fireSize/2, y)
+            close()
+        }
+
+        canvas.drawPath(path, firePaint)
+    }
     private fun drawConnectorLines(canvas: Canvas) { }
     private fun drawCircles(canvas: Canvas) { }
     private fun drawLogos(canvas: Canvas) { }
@@ -197,9 +242,14 @@ class StreakProgressView @JvmOverloads constructor(
     private fun Int.dpToPx(): Int {
         return (this * context.resources.displayMetrics.density).toInt()
     }
+
+    private fun Int.spToPx(): Float {
+        return this * context.resources.displayMetrics.scaledDensity
+    }
     fun updateStreakData(weeklyStreak: List<Boolean>, currentStreak: Int) {
-        updateStreakCount(currentStreak)
-        updateDayIndicators(weeklyStreak)
+        this.weeklyStreak = weeklyStreak
+        this.currentStreak = currentStreak
+        invalidate()
     }
 
     private fun updateStreakCount(streak: Int) {
