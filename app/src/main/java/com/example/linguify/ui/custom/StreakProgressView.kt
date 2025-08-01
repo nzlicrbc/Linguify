@@ -65,7 +65,50 @@ class StreakProgressView @JvmOverloads constructor(
 
         attrs?.let { readAttributes(it, defStyleAttr) }
 
+        initializePaints()
     }
+
+    private fun initializePaints() {
+        activePaint.apply {
+            color = activeCircleColor
+            style = Paint.Style.FILL
+            isAntiAlias = true
+        }
+
+        inactivePaint.apply {
+            color = inactiveCircleColor
+            style = Paint.Style.STROKE
+            strokeWidth = 2.dpToPx().toFloat()
+            isAntiAlias = true
+        }
+
+        textPaint.apply {
+            color = dayLabelTextColor
+            textSize = dayLabelTextSize
+            textAlign = Paint.Align.CENTER
+            isAntiAlias = true
+        }
+
+        connectorPaint.apply {
+            color = connectorLineColor
+            strokeWidth = connectorLineWidth
+            isAntiAlias = true
+        }
+
+        backgroundPaint.apply {
+            color = streakBackgroundColor
+            style = Paint.Style.FILL
+            isAntiAlias = true
+        }
+
+        borderPaint.apply {
+            color = streakBorderColor
+            style = Paint.Style.STROKE
+            strokeWidth = 1.dpToPx().toFloat()
+            isAntiAlias = true
+        }
+    }
+
 
     private fun readAttributes(attrs: AttributeSet, defStyleAttr: Int) {
         val typedArray = context.obtainStyledAttributes(
@@ -250,33 +293,6 @@ class StreakProgressView @JvmOverloads constructor(
         this.weeklyStreak = weeklyStreak
         this.currentStreak = currentStreak
         invalidate()
-    }
-
-    private fun updateStreakCount(streak: Int) {
-        binding.tvStreakCount.text = when {
-            streak == 0 -> "Streak başlat!"
-            streak == 1 -> "1 gün streak"
-            else -> "$streak gün streak"
-        }
-    }
-
-    private fun updateDayIndicators(weeklyStreak: List<Boolean>) {
-        if (weeklyStreak.size != dayIndicators.size) return
-
-        weeklyStreak.forEachIndexed { index, isActive ->
-            val indicator = dayIndicators[index]
-            val wasActive = if (index < previousWeeklyStreak.size) previousWeeklyStreak[index] else false
-
-            val shouldAnimate = isActive && !wasActive
-
-            if (shouldAnimate) {
-                updateIndicatorState(indicator, isActive)
-            } else {
-                updateIndicatorStateWithoutAnimation(indicator, isActive)
-            }
-        }
-
-        previousWeeklyStreak = weeklyStreak.toList()
     }
 
 }
