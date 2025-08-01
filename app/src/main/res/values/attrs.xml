@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="StreakProgressView">
+        <!-- Circle -->
+        <attr name="circleRadius" format="dimension" />
+        <attr name="activeCircleColor" format="color" />
+        <attr name="inactiveCircleColor" format="color" />
+
+        <!-- Connector -->
+        <attr name="connectorLineColor" format="color" />
+        <attr name="connectorLineWidth" format="dimension" />
+
+        <!-- Text -->
+        <attr name="dayLabelTextSize" format="dimension" />
+        <attr name="dayLabelTextColor" format="color" />
+        <attr name="streakTextSize" format="dimension" />
+        <attr name="streakTextColor" format="color" />
+
+        <!-- Background -->
+        <attr name="streakBackgroundColor" format="color" />
+        <attr name="streakBorderColor" format="color" />
+        <attr name="streakCornerRadius" format="dimension" />
+
+        <!-- Animation -->
+        <attr name="animationDuration" format="integer" />
+        <attr name="animationScale" format="float" />
+
+        <!-- Logo -->
+        <attr name="logoColor" format="color" />
+        <attr name="logoSize" format="dimension" />
+    </declare-styleable>
+</resources>
