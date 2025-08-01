@@ -300,8 +300,31 @@ class StreakProgressView @JvmOverloads constructor(
 
         canvas.drawPath(path, firePaint)
     }
-    private fun drawConnectorLines(canvas: Canvas) { }
-    private fun drawCircles(canvas: Canvas) { }
+    private fun drawConnectorLines(canvas: Canvas) {
+        val circleY = getCircleY()
+        val positions = getCirclePositions()
+
+        for (i in 0 until positions.size - 1) {
+            val startX = positions[i] + circleRadius
+            val endX = positions[i + 1] - circleRadius
+
+            canvas.drawLine(startX, circleY, endX, circleY, connectorPaint)
+        }
+    }
+    private fun drawCircles(canvas: Canvas) {
+        val circleY = getCircleY()
+        val positions = getCirclePositions()
+
+        positions.forEachIndexed { index, x ->
+            val isActive = if (index < weeklyStreak.size) weeklyStreak[index] else false
+
+            if (isActive) {
+                canvas.drawCircle(x, circleY, circleRadius, activePaint)
+            } else {
+                canvas.drawCircle(x, circleY, circleRadius, inactivePaint)
+            }
+        }
+    }
     private fun drawLogos(canvas: Canvas) { }
     private fun drawDayLabels(canvas: Canvas) { }
 
