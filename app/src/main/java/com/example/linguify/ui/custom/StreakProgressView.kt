@@ -103,6 +103,8 @@ class StreakProgressView @JvmOverloads constructor(
         return (this * context.resources.displayMetrics.density).toInt()
     }
 
+    private var previousWeeklyStreak = List(7) { false }
+
     fun updateStreakData(weeklyStreak: List<Boolean>, currentStreak: Int) {
         updateStreakCount(currentStreak)
         updateDayIndicators(weeklyStreak)
@@ -121,29 +123,53 @@ class StreakProgressView @JvmOverloads constructor(
 
         weeklyStreak.forEachIndexed { index, isActive ->
             val indicator = dayIndicators[index]
-            updateIndicatorState(indicator, isActive, index)
+            val wasActive = if (index < previousWeeklyStreak.size) previousWeeklyStreak[index] else false
+
+            val shouldAnimate = isActive && !wasActive
+
+            if (shouldAnimate) {
+                updateIndicatorState(indicator, isActive)
+            } else {
+                updateIndicatorStateWithoutAnimation(indicator, isActive)
+            }
         }
+
+        previousWeeklyStreak = weeklyStreak.toList()
     }
 
-    private fun updateIndicatorState(indicator: ImageView, isActive: Boolean, index: Int) {
+    private fun updateIndicatorState(indicator: ImageView, isActive: Boolean) {
         indicator.animate()
-            .scaleX(0.9f)
-            .scaleY(0.9f)
-            .setDuration(100)
+            .scaleX(0.7f)
+            .scaleY(0.7f)
+            .setDuration(500)
             .withEndAction {
                 if (isActive) {
                     addLogoToActiveIndicator(indicator)
                 } else {
                     indicator.setImageResource(R.drawable.day_indicator_inactive)
                 }
-
                 indicator.animate()
-                    .scaleX(1f)
-                    .scaleY(1f)
-                    .setDuration(150)
+                    .scaleX(1.2f)
+                    .scaleY(1.2f)
+                    .setDuration(500)
+                    .withEndAction {
+                        indicator.animate()
+                            .scaleX(1f)
+                            .scaleY(1f)
+                            .setDuration(100)
+                            .start()
+                    }
                     .start()
             }
             .start()
+    }
+
+    private fun updateIndicatorStateWithoutAnimation(indicator: ImageView, isActive: Boolean) {
+        if (isActive) {
+            addLogoToActiveIndicator(indicator)
+        } else {
+            indicator.setImageResource(R.drawable.day_indicator_inactive)
+        }
     }
 
     private fun addLogoToActiveIndicator(indicator: ImageView) {
