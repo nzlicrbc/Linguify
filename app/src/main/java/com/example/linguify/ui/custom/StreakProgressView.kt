@@ -126,17 +126,17 @@ class StreakProgressView @JvmOverloads constructor(
     }
 
     private fun updateIndicatorState(indicator: ImageView, isActive: Boolean, index: Int) {
-        val targetDrawable = if (isActive) {
-            addLogoToActiveIndicator(indicator)
-        } else {
-            R.drawable.day_indicator_inactive
-        }
-
         indicator.animate()
             .scaleX(0.9f)
             .scaleY(0.9f)
             .setDuration(100)
             .withEndAction {
+                if (isActive) {
+                    addLogoToActiveIndicator(indicator)
+                } else {
+                    indicator.setImageResource(R.drawable.day_indicator_inactive)
+                }
+
                 indicator.animate()
                     .scaleX(1f)
                     .scaleY(1f)
@@ -149,7 +149,7 @@ class StreakProgressView @JvmOverloads constructor(
     private fun addLogoToActiveIndicator(indicator: ImageView) {
         try {
             val activeBackground = ContextCompat.getDrawable(context, R.drawable.day_indicator_active)
-            val logoDrawable = ContextCompat.getDrawable(context, R.drawable.ic_app_logo)
+            val logoDrawable = ContextCompat.getDrawable(context, R.drawable.ic_favorite)
 
             if (activeBackground != null && logoDrawable != null) {
                 val layerDrawable = android.graphics.drawable.LayerDrawable(
