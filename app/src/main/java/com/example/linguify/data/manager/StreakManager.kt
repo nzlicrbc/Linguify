@@ -41,7 +41,7 @@ class StreakManager @Inject constructor(
         updateWeeklyStreakData(today)
     }
 
-    private fun getLastActivityDate(): String {
+    fun getLastActivityDate(): String {
         return sharedPreferences.getString(
             getUserSpecificKey(Constants.KEY_LAST_ACTIVITY_DATE),
             ""
@@ -100,7 +100,7 @@ class StreakManager @Inject constructor(
         saveStreakDays(streakDays)
     }
 
-    fun getWeeklyStreakDays(): List<Boolean> {
+    fun getWeeklyStreak(): List<Boolean> {
         val streakDays = getStoredStreakDays()
         val weeklyStreak = mutableListOf<Boolean>()
 

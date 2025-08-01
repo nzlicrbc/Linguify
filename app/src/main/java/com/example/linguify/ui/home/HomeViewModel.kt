@@ -3,9 +3,11 @@ package com.example.linguify.ui.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.linguify.data.manager.StreakManager
 import com.example.linguify.data.repositories.PexelsRepository
 import com.example.linguify.data.repositories.UserPreferencesRepository
 import com.example.linguify.data.repositories.WordRepository
+import com.example.linguify.model.StreakData
 import com.example.linguify.model.Word
 import com.example.linguify.model.WordLearningStatus
 import com.example.linguify.utils.UserLevel
@@ -24,7 +26,8 @@ class HomeViewModel @Inject constructor(
     private val wordRepository: WordRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
     private val firebaseAuth: FirebaseAuth,
-    private val pexelsRepository: PexelsRepository
+    private val pexelsRepository: PexelsRepository,
+    private val streakManager: StreakManager
 ) : ViewModel() {
 
     private val _wordCountsState = MutableStateFlow<WordCountsState>(WordCountsState.Loading)
@@ -57,6 +60,9 @@ class HomeViewModel @Inject constructor(
 
     private val imageCache = mutableMapOf<String, String>()
 
+    private val _streakData = MutableStateFlow(StreakData())
+    val streakData: StateFlow<StreakData> = _streakData
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             preloadCommonImages()
@@ -73,6 +79,37 @@ class HomeViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error checking database: ${e.message}", e)
             }
+        }
+
+        viewModelScope.launch {
+            loadStreakData()
+        }
+    }
+
+    private suspend fun loadStreakData() {
+        try {
+            streakManager.recordDailyActivity()
+
+            val weeklyStreak = streakManager.getWeeklyStreak()
+            val currentStreak = streakManager.getCurrentStreak()
+            val lastActivityDate = streakManager.getLastActivityDate()
+
+            _streakData.value = StreakData(
+                streakDays = weeklyStreak,
+                currentStreakCount = currentStreak,
+                lastActivityDate = lastActivityDate
+            )
+
+            Log.d("HomeViewModel", "Streak data loaded - Current: $currentStreak")
+
+        } catch (e: Exception) {
+            Log.e("HomeViewModel", "Error loading streak data: ${e.message}")
+        }
+    }
+
+    fun refreshStreakData() {
+        viewModelScope.launch {
+            loadStreakData()
         }
     }
 
