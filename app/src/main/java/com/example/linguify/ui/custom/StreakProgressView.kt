@@ -1,5 +1,7 @@
 package com.example.linguify.ui.custom
 
+import android.animation.Animator
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -10,6 +12,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import com.example.linguify.R
 import android.graphics.Path
+import android.view.animation.BounceInterpolator
 
 class StreakProgressView @JvmOverloads constructor(
     context: Context,
@@ -44,6 +47,11 @@ class StreakProgressView @JvmOverloads constructor(
     private var currentStreak = 0
     private var weeklyStreak = List(7) { false }
     private val dayLabels = listOf("P", "S", "C", "P", "C", "C", "P")
+
+    private var animatingIndex = -1
+    private var animationProgress = 0f
+
+    private var previousWeeklyStreak = List(7) { false }
 
     init {
         circleRadius = 16.dpToPx().toFloat()
@@ -110,8 +118,8 @@ class StreakProgressView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val desiredWidth = 300.dpToPx()
-        val desiredHeight = 100.dpToPx()
+        val desiredWidth = 320.dpToPx()
+        val desiredHeight = 120.dpToPx()
 
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val widthSize = MeasureSpec.getSize(widthMeasureSpec)
@@ -240,7 +248,7 @@ class StreakProgressView @JvmOverloads constructor(
     }
 
     private fun getCircleY(): Float {
-        return height - 45.dpToPx().toFloat()
+        return height - 30.dpToPx().toFloat()
     }
 
     private fun getCirclePositions(): List<Float> {
@@ -284,21 +292,17 @@ class StreakProgressView @JvmOverloads constructor(
     }
 
     private fun drawFireIcon(canvas: Canvas, x: Float, y: Float) {
-        val fireSize = 12.dpToPx().toFloat()
-        val firePaint = Paint().apply {
-            color = Color.parseColor("#FF5722")
-            style = Paint.Style.FILL
-            isAntiAlias = true
+        val fireDrawable = ContextCompat.getDrawable(context, R.drawable.ic_fire)
+        fireDrawable?.let { drawable ->
+            val size = 16.dpToPx()
+            drawable.setBounds(
+                (x - size/2).toInt(),
+                (y - size/2).toInt(),
+                (x + size/2).toInt(),
+                (y + size/2).toInt()
+            )
+            drawable.draw(canvas)
         }
-
-        val path = Path().apply {
-            moveTo(x, y + fireSize)
-            lineTo(x - fireSize/2, y)
-            lineTo(x + fireSize/2, y)
-            close()
-        }
-
-        canvas.drawPath(path, firePaint)
     }
     private fun drawConnectorLines(canvas: Canvas) {
         val circleY = getCircleY()
@@ -318,10 +322,38 @@ class StreakProgressView @JvmOverloads constructor(
         positions.forEachIndexed { index, x ->
             val isActive = if (index < weeklyStreak.size) weeklyStreak[index] else false
 
-            if (isActive) {
-                canvas.drawCircle(x, circleY, circleRadius, activePaint)
+            val currentRadius = if (index == animatingIndex) {
+                val scale = 1f + animationProgress
+                circleRadius * scale
             } else {
-                canvas.drawCircle(x, circleY, circleRadius, inactivePaint)
+                circleRadius
+            }
+
+            if (isActive) {
+                val innerPaint = Paint().apply {
+                    color = Color.WHITE
+                    style = Paint.Style.FILL
+                    isAntiAlias = true
+                }
+
+                canvas.drawCircle(x, circleY, currentRadius, innerPaint)
+
+                val activeStrokePaint = Paint().apply {
+                    color = activeCircleColor
+                    style = Paint.Style.STROKE
+                    strokeWidth = 3.dpToPx().toFloat()
+                    isAntiAlias = true
+                }
+                canvas.drawCircle(x, circleY, currentRadius, activeStrokePaint)
+
+            } else {
+                val inactiveFillPaint = Paint().apply {
+                    color = ContextCompat.getColor(context, R.color.background_light)
+                    style = Paint.Style.FILL
+                    isAntiAlias = true
+                }
+                canvas.drawCircle(x, circleY, currentRadius, inactiveFillPaint)
+                canvas.drawCircle(x, circleY, currentRadius, inactivePaint)
             }
         }
     }
@@ -339,44 +371,119 @@ class StreakProgressView @JvmOverloads constructor(
     }
 
     private fun drawHeartIcon(canvas: Canvas, centerX: Float, centerY: Float) {
-        val heartPaint = Paint().apply {
-            color = logoColor
-            style = Paint.Style.FILL
-            isAntiAlias = true
-        }
-
-        val size = logoSize
-
-        val path = Path().apply {
-            moveTo(centerX, centerY + size * 0.3f)
-
-            cubicTo(
-                centerX - size * 0.5f, centerY - size * 0.4f,
-                centerX - size * 0.9f, centerY,
-                centerX, centerY + size * 0.6f
+        val heartDrawable = ContextCompat.getDrawable(context, R.drawable.ic_favorite)
+        heartDrawable?.let { drawable ->
+            val size = logoSize.toInt()
+            drawable.setBounds(
+                (centerX - size/2).toInt(),
+                (centerY - size/2).toInt(),
+                (centerX + size/2).toInt(),
+                (centerY + size/2).toInt()
             )
-
-            cubicTo(
-                centerX + size * 0.9f, centerY,
-                centerX + size * 0.5f, centerY - size * 0.4f,
-                centerX, centerY + size * 0.3f
-            )
-
-            close()
+            drawable.draw(canvas)
         }
-
-        canvas.drawPath(path, heartPaint)
     }
 
     private fun drawDayLabels(canvas: Canvas) {
         val circleY = getCircleY()
         val positions = getCirclePositions()
-        val labelY = circleY - circleRadius - 8.dpToPx().toFloat()
+        val labelY = circleY - circleRadius - 12.dpToPx().toFloat()
 
         positions.forEachIndexed { index, x ->
             val label = dayLabels[index]
             canvas.drawText(label, x, labelY, textPaint)
         }
+    }
+
+    private fun animateNewStreak(dayIndex: Int) {
+        if (dayIndex == -1) return
+
+        animatingIndex = dayIndex
+
+        ValueAnimator.ofFloat(1f, 0.7f).apply {
+            duration = 500
+
+            addUpdateListener { animator ->
+                animationProgress = animator.animatedValue as Float - 1f
+                invalidate()
+            }
+
+            addListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator) {}
+
+                override fun onAnimationEnd(animation: Animator) {
+                    startStage2Animation()
+                }
+
+                override fun onAnimationCancel(animation: Animator) {
+                    resetAnimation()
+                }
+
+                override fun onAnimationRepeat(animation: Animator) {}
+            })
+
+            start()
+        }
+    }
+
+    private fun startStage2Animation() {
+        ValueAnimator.ofFloat(0.7f, 1.2f).apply {
+            duration = 500
+
+            addUpdateListener { animator ->
+                animationProgress = animator.animatedValue as Float - 1f
+                invalidate()
+            }
+
+            addListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator) {}
+
+                override fun onAnimationEnd(animation: Animator) {
+                    startStage3Animation()
+                }
+
+                override fun onAnimationCancel(animation: Animator) {
+                    resetAnimation()
+                }
+
+                override fun onAnimationRepeat(animation: Animator) {}
+            })
+
+            start()
+        }
+    }
+
+    private fun startStage3Animation() {
+        ValueAnimator.ofFloat(1.2f, 1f).apply {
+            duration = 100
+
+            addUpdateListener { animator ->
+                animationProgress = animator.animatedValue as Float - 1f
+                invalidate()
+            }
+
+            addListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator) {}
+
+                override fun onAnimationEnd(animation: Animator) {
+                    resetAnimation()
+                }
+
+                override fun onAnimationCancel(animation: Animator) {
+                    resetAnimation()
+                }
+
+                override fun onAnimationRepeat(animation: Animator) {}
+            })
+
+            start()
+        }
+    }
+
+    private fun resetAnimation() {
+        animatingIndex = -1
+        animationProgress = 0f
+        invalidate()
     }
 
     private fun Int.dpToPx(): Int {
@@ -387,9 +494,31 @@ class StreakProgressView @JvmOverloads constructor(
         return this * context.resources.displayMetrics.scaledDensity
     }
     fun updateStreakData(weeklyStreak: List<Boolean>, currentStreak: Int) {
+        val oldStreak = this.weeklyStreak
         this.weeklyStreak = weeklyStreak
         this.currentStreak = currentStreak
-        invalidate()
+
+        val newActiveIndex = findNewActiveIndex(oldStreak, weeklyStreak)
+        if (newActiveIndex != -1) {
+            animateNewStreak(newActiveIndex)
+        } else {
+            invalidate()
+        }
+
+        previousWeeklyStreak = weeklyStreak.toList()
     }
+
+    private fun findNewActiveIndex(previous: List<Boolean>, current: List<Boolean>): Int {
+        for (i in current.indices) {
+            val wasActive = previous.getOrNull(i) ?: false
+            val isActive = current[i]
+            if (isActive && !wasActive) {
+                return i
+            }
+        }
+        return -1
+    }
+
+
 
 }
