@@ -1,6 +1,7 @@
 package com.example.linguify.ui.custom
 
 import android.content.Context
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
@@ -36,6 +37,13 @@ class StreakProgressView @JvmOverloads constructor(
     private var animationScale: Float
     private var logoColor: Int
     private var logoSize: Float
+
+    private val activePaint = Paint()
+    private val inactivePaint = Paint()
+    private val textPaint = Paint()
+    private val connectorPaint = Paint()
+    private val backgroundPaint = Paint()
+    private val borderPaint = Paint()
 
     init {
         circleRadius = 16.dpToPx().toFloat()
@@ -152,6 +160,39 @@ class StreakProgressView @JvmOverloads constructor(
             typedArray.recycle()
         }
     }
+
+    override fun onDraw(canvas: Canvas?) {
+        super.onDraw(canvas)
+        canvas ?: return
+
+        drawBackground(canvas)
+        drawStreakText(canvas)
+        drawConnectorLines(canvas)
+        drawCircles(canvas)
+        drawLogos(canvas)
+        drawDayLabels(canvas)
+    }
+
+    private fun getCircleY(): Float {
+        return height - 45.dpToPx().toFloat()
+    }
+
+    private fun getCirclePositions(): List<Float> {
+        val padding = 24.dpToPx().toFloat()
+        val availableWidth = width - 2 * padding
+        val spacing = availableWidth / 6f
+
+        return (0 until 7).map { i ->
+            padding + i * spacing
+        }
+    }
+
+    private fun drawBackground(canvas: Canvas) { }
+    private fun drawStreakText(canvas: Canvas) { }
+    private fun drawConnectorLines(canvas: Canvas) { }
+    private fun drawCircles(canvas: Canvas) { }
+    private fun drawLogos(canvas: Canvas) { }
+    private fun drawDayLabels(canvas: Canvas) { }
 
     private fun Int.dpToPx(): Int {
         return (this * context.resources.displayMetrics.density).toInt()
