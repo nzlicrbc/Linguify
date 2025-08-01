@@ -15,7 +15,7 @@ class StreakProgressView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : LinearLayout(context, attrs, defStyleAttr) {
+) : View(context, attrs, defStyleAttr) {
 
     private val binding: StreakProgressViewBinding
     private val dayIndicators = mutableListOf<ImageView>()
