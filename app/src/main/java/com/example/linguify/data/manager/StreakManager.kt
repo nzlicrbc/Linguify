@@ -104,8 +104,11 @@ class StreakManager @Inject constructor(
         val streakDays = getStoredStreakDays()
         val weeklyStreak = mutableListOf<Boolean>()
 
-        for (i in 6 downTo 0) {
-            val dateString = getDateStringForDaysAgo(i)
+        val calendar = Calendar.getInstance()
+
+        for (i in 0 until 7) {
+            calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY + i)
+            val dateString = dateFormat.format(calendar.time)
             weeklyStreak.add(streakDays.contains(dateString))
         }
 
