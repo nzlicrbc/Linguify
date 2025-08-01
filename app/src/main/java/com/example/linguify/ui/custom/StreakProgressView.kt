@@ -325,8 +325,59 @@ class StreakProgressView @JvmOverloads constructor(
             }
         }
     }
-    private fun drawLogos(canvas: Canvas) { }
-    private fun drawDayLabels(canvas: Canvas) { }
+    private fun drawLogos(canvas: Canvas) {
+        val circleY = getCircleY()
+        val positions = getCirclePositions()
+
+        positions.forEachIndexed { index, x ->
+            val isActive = if (index < weeklyStreak.size) weeklyStreak[index] else false
+
+            if (isActive) {
+                drawHeartIcon(canvas, x, circleY)
+            }
+        }
+    }
+
+    private fun drawHeartIcon(canvas: Canvas, centerX: Float, centerY: Float) {
+        val heartPaint = Paint().apply {
+            color = logoColor
+            style = Paint.Style.FILL
+            isAntiAlias = true
+        }
+
+        val size = logoSize
+
+        val path = Path().apply {
+            moveTo(centerX, centerY + size * 0.3f)
+
+            cubicTo(
+                centerX - size * 0.5f, centerY - size * 0.4f,
+                centerX - size * 0.9f, centerY,
+                centerX, centerY + size * 0.6f
+            )
+
+            cubicTo(
+                centerX + size * 0.9f, centerY,
+                centerX + size * 0.5f, centerY - size * 0.4f,
+                centerX, centerY + size * 0.3f
+            )
+
+            close()
+        }
+
+        canvas.drawPath(path, heartPaint)
+    }
+
+    private fun drawDayLabels(canvas: Canvas) {
+        val circleY = getCircleY()
+        val positions = getCirclePositions()
+        val labelY = circleY - circleRadius - 8.dpToPx().toFloat()
+
+        positions.forEachIndexed { index, x ->
+            val label = dayLabels[index]
+            canvas.drawText(label, x, labelY, textPaint)
+        }
+    }
 
     private fun Int.dpToPx(): Int {
         return (this * context.resources.displayMetrics.density).toInt()
