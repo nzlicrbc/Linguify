@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.linguify.R
 import com.example.linguify.data.manager.LoginPreferencesManager
+import com.example.linguify.data.manager.StreakManager
 import com.example.linguify.databinding.FragmentHomeBinding
 import com.example.linguify.model.Word
 import com.example.linguify.utils.loadWithCache
@@ -39,6 +40,9 @@ class HomeFragment : Fragment() {
     @Inject
     lateinit var loginPreferencesManager: LoginPreferencesManager
 
+    @Inject
+    lateinit var streakManager: StreakManager
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -57,6 +61,25 @@ class HomeFragment : Fragment() {
         viewModel.loadWordCounts()
         viewModel.loadLearningWordsForReview()
         viewModel.loadRandomDiscoverImages()
+
+        setupStreakTracking()
+    }
+
+    private fun setupStreakTracking() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            streakManager.recordDailyActivity()
+
+            updateStreakProgress()
+        }
+    }
+
+    private fun updateStreakProgress() {
+        val weeklyStreak = streakManager.getWeeklyStreak()
+        val currentStreak = streakManager.getCurrentStreak()
+
+        binding.streakProgressView.updateStreakData(weeklyStreak, currentStreak)
+
+        Log.d("HomeFragment", "Streak updated - Current: $currentStreak, Weekly: $weeklyStreak")
     }
 
     private fun setupObservers() {

@@ -21,7 +21,7 @@ android {
         versionName = "1.0"
 
         val properties = Properties().apply {
-            load(rootProject.file("app/secrets.properties").inputStream())
+            load(rootProject.file("local.properties").inputStream())
         }
 
         buildConfigField(
