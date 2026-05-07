@@ -34,6 +34,7 @@ class ReviewFragment : Fragment() {
     private var selectedOptionIndex: Int? = null
 
     private var currentButtons: List<Button> = emptyList()
+    private var pendingMoveToNext: Runnable? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -326,15 +327,9 @@ class ReviewFragment : Fragment() {
 
         android.util.Log.d("ReviewFragment", "Answer feedback: $message")
 
-        if (isCorrect) {
-            binding.root.postDelayed({
-                moveToNextQuestion()
-            }, 2000)
-        } else {
-            binding.root.postDelayed({
-                moveToNextQuestion()
-            }, 3000)
-        }
+        val delay = if (isCorrect) 2000L else 3000L
+        pendingMoveToNext = Runnable { moveToNextQuestion() }
+        binding.root.postDelayed(pendingMoveToNext!!, delay)
     }
 
     private fun moveToNextQuestion() {
@@ -400,6 +395,9 @@ class ReviewFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        pendingMoveToNext?.let { binding.root.removeCallbacks(it) }
+        pendingMoveToNext = null
+
         currentButtons.forEach { it.setOnClickListener(null) }
         currentButtons = emptyList()
 
