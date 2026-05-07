@@ -42,15 +42,23 @@ class RegisterFragment : Fragment() {
         viewModel.registerResult.observe(viewLifecycleOwner, Observer { result ->
             when (result) {
                 is RegisterResult.Success -> {
+                    binding.buttonRegister.isEnabled = true
                     findNavController().navigate(R.id.action_registerFragment_to_onboardingFragment)
                 }
                 is RegisterResult.Error -> {
+                    binding.buttonRegister.isEnabled = true
                     Toast.makeText(requireContext(), result.message, Toast.LENGTH_LONG).show()
                 }
                 is RegisterResult.Loading -> {
+                    binding.buttonRegister.isEnabled = false
                 }
             }
         })
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun setupInputListeners() {
