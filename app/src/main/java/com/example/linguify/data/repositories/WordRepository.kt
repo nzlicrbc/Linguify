@@ -386,7 +386,7 @@ class WordRepository @Inject constructor(
                     val index = userDoc.getLong("lastWordIndex_${levelCode}")?.toInt() ?: 0
 
                     sharedPreferences.edit()
-                        .putInt("${KEY_LAST_WORD_INDEX_PREFIX}${levelCode}", index)
+                        .putInt(getUserSpecificKey("${KEY_LAST_WORD_INDEX_PREFIX}${levelCode}"), index)
                         .apply()
 
                     return@withContext index
