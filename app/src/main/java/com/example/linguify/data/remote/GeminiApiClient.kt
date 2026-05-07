@@ -1,5 +1,6 @@
 package com.example.linguify.data.remote
 
+import com.example.linguify.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +23,8 @@ object GeminiApiModule {
     fun provideGeminiOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
+                level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY
+                        else HttpLoggingInterceptor.Level.NONE
             })
             .connectTimeout(60, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
