@@ -266,8 +266,7 @@ class HomeFragment : Fragment() {
         }
 
         binding.btnDiscover.setOnClickListener {
-            val bundle = bundleOf("load_to_learn" to false, "mode" to "discover")
-            findNavController().navigate(R.id.action_homeFragment_to_flashcardFragment, bundle)
+            findNavController().navigate(R.id.action_homeFragment_to_flashcardFragment)
         }
 
         binding.btnLearn.setOnClickListener {
