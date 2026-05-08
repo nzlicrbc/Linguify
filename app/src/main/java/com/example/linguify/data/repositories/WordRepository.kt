@@ -140,9 +140,7 @@ class WordRepository @Inject constructor(
                 )
             }
 
-            wordDao.deleteAllWords()
-
-            wordDao.insertWords(wordEntities)
+            wordDao.replaceAllWords(wordEntities)
 
             sharedPreferences.edit().putBoolean("is_db_initialized", true).apply()
 
