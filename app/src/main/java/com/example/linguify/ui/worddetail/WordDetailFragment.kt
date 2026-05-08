@@ -124,7 +124,7 @@ class WordDetailFragment : Fragment() {
                     }
                     is WordDetailViewModel.PronunciationState.Error -> {
                         binding.btnPlayPronunciation.isEnabled = true
-                        Toast.makeText(requireContext(), "Failed to play pronunciation", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), getString(R.string.pronunciation_error), Toast.LENGTH_SHORT).show()
                     }
                 }
             }

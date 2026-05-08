@@ -61,7 +61,7 @@ class LevelTestFragment : Fragment() {
                         if (result.questions.isNotEmpty()) {
                             updateQuestionUI(result.questions[currentQuestionIndex])
                         } else {
-                            showError("No questions found. Please try again later.")
+                            showError(getString(R.string.no_questions_found))
                         }
                     }
                     is LevelTestViewModel.TestQuestionsState.Error -> {
@@ -104,7 +104,8 @@ class LevelTestFragment : Fragment() {
 
     private fun updateQuestionUI(question: TestQuestion) {
         currentQuestion = question
-        binding.tvQuestionNumber.text = "Question ${currentQuestionIndex + 1}/${viewModel.testQuestions.value.let { if (it is LevelTestViewModel.TestQuestionsState.Success) it.questions.size else 0 }}"
+        val questionsSize = viewModel.testQuestions.value.let { if (it is LevelTestViewModel.TestQuestionsState.Success) it.questions.size else 0 }
+        binding.tvQuestionNumber.text = getString(R.string.question_progress, currentQuestionIndex + 1, questionsSize)
         binding.tvQuestion.text = question.questionText
         binding.btnOptionA.text = question.options[0]
         binding.btnOptionB.text = question.options[1]
@@ -155,7 +156,7 @@ class LevelTestFragment : Fragment() {
 
         binding.layoutQuestions.visibility = View.GONE
         binding.layoutResults.visibility = View.VISIBLE
-        binding.tvTestResults.text = "Test completed!\nYour level: ${userLevel.displayName}"
+        binding.tvTestResults.text = getString(R.string.test_completed, userLevel.displayName)
 
         binding.btnContinue.setOnClickListener {
             viewModel.saveUserLevel(userLevel)

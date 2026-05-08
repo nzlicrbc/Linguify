@@ -336,7 +336,7 @@ class FlashcardFragment : Fragment() {
                     is FlashcardViewModel.PronunciationState.Error -> {
                         binding.btnPronunciation.isEnabled = true
                         binding.btnPronunciation.alpha = 1.0f
-                        Toast.makeText(context, "Telaffuz yüklenemedi", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, getString(R.string.pronunciation_error), Toast.LENGTH_SHORT).show()
                     }
                 }
             }

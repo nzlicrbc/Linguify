@@ -171,7 +171,7 @@ class ReviewFragment : Fragment() {
         binding.layoutQuestionContainer.isVisible = true
         binding.layoutContextSentence.root.isVisible = true
 
-        binding.tvQuestionText.text = "Complete the sentence:"
+        binding.tvQuestionText.text = getString(R.string.complete_the_sentence)
         _contextSentenceBinding?.tvSentence?.text = question.sentence
 
         _contextSentenceBinding?.let { contextBinding ->
@@ -195,7 +195,7 @@ class ReviewFragment : Fragment() {
         binding.layoutQuestionContainer.isVisible = true
         binding.layoutDefinition.root.isVisible = true
 
-        binding.tvQuestionText.text = "Which definition matches '${question.word.text}'?"
+        binding.tvQuestionText.text = getString(R.string.which_definition_matches, question.word.text)
 
         _definitionBinding?.let { defBinding ->
             defBinding.btnOption1.text = question.definitions[0]
@@ -273,7 +273,7 @@ class ReviewFragment : Fragment() {
 
         if (selectedIndex == null) {
             android.util.Log.w("ReviewFragment", "No option selected!")
-            Toast.makeText(context, "Please select an option", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.please_select_option), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -322,7 +322,7 @@ class ReviewFragment : Fragment() {
     }
 
     private fun showAnswerFeedback(isCorrect: Boolean) {
-        val message = if (isCorrect) "Correct! ✓" else "Incorrect ✗"
+        val message = if (isCorrect) getString(R.string.answer_correct) else getString(R.string.answer_incorrect)
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 
         android.util.Log.d("ReviewFragment", "Answer feedback: $message")
@@ -351,7 +351,7 @@ class ReviewFragment : Fragment() {
 
         Toast.makeText(
             context,
-            "Session completed!\nScore: $score/$totalQuestions",
+            getString(R.string.session_completed, score, totalQuestions),
             Toast.LENGTH_LONG
         ).show()
 
