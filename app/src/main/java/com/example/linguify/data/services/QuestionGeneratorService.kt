@@ -391,7 +391,7 @@ No markdown, no explanations, just the JSON above.
             )
 
             val response = geminiApiService.generateContent(request = request)
-            val responseText = response.candidates.firstOrNull()
+            val responseText = response.candidates?.firstOrNull()
                 ?.content?.parts?.firstOrNull()?.text
 
             responseText?.let { cleanJsonResponse(it) }

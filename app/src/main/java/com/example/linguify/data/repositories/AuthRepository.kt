@@ -15,7 +15,9 @@ class AuthRepository @Inject constructor(
     suspend fun login(email: String, password: String): Result<FirebaseUser> {
         return try {
             val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
-            Result.success(authResult.user!!)
+            val user = authResult.user
+                ?: return Result.failure(Exception("Login succeeded but Firebase returned no user"))
+            Result.success(user)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -24,7 +26,9 @@ class AuthRepository @Inject constructor(
     suspend fun register(email: String, password: String): Result<FirebaseUser> {
         return try {
             val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            Result.success(authResult.user!!)
+            val user = authResult.user
+                ?: return Result.failure(Exception("Registration succeeded but Firebase returned no user"))
+            Result.success(user)
         } catch (e: Exception) {
             Result.failure(e)
         }
