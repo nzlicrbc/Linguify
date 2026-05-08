@@ -6,6 +6,7 @@ import com.example.linguify.data.remote.model.*
 import com.example.linguify.data.repositories.WordRepository
 import com.example.linguify.model.*
 import org.json.JSONObject
+import retrofit2.HttpException
 import java.util.regex.Pattern
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -211,27 +212,34 @@ class QuestionGeneratorService @Inject constructor(
             }
         }
 
-        return """
-Create a multiple choice question for the English word "${word.text}".
+        val e0 = options[0].escapeJson()
+        val e1 = options[1].escapeJson()
+        val e2 = options[2].escapeJson()
+        val e3 = options[3].escapeJson()
+        val eWord = word.text.escapeJson()
+        val eTranslation = (word.translation ?: "unknown").escapeJson()
 
-Word: ${word.text}
-Correct Translation: ${word.translation}
+        return """
+Create a multiple choice question for the English word "$eWord".
+
+Word: $eWord
+Correct Translation: $eTranslation
 
 CRITICAL INSTRUCTION: 
-- The correct answer "${word.translation}" MUST be at position ${randomCorrectIndex} (index ${randomCorrectIndex})
+- The correct answer "$eTranslation" MUST be at position $randomCorrectIndex (index $randomCorrectIndex)
 - Put these options in this EXACT order:
-  Position 0: "${options[0]}"
-  Position 1: "${options[1]}" 
-  Position 2: "${options[2]}"
-  Position 3: "${options[3]}"
+  Position 0: "$e0"
+  Position 1: "$e1" 
+  Position 2: "$e2"
+  Position 3: "$e3"
 
 Requirements:
-- Ask "What does '${word.text}' mean in Turkish?"
+- Ask "What does '$eWord' mean in Turkish?"
 - Use EXACTLY these 4 options in the exact order shown above
-- The correctIndex MUST be ${randomCorrectIndex}
+- The correctIndex MUST be $randomCorrectIndex
 
 Respond ONLY with this EXACT JSON (no changes to options order):
-{"questionText": "What does '${word.text}' mean in Turkish?", "options": ["${options[0]}", "${options[1]}", "${options[2]}", "${options[3]}"], "correctIndex": ${randomCorrectIndex}}
+{"questionText": "What does '$eWord' mean in Turkish?", "options": ["$e0", "$e1", "$e2", "$e3"], "correctIndex": $randomCorrectIndex}
 
 No markdown, no explanations, just the JSON above.
 """.trimIndent()
@@ -266,31 +274,37 @@ No markdown, no explanations, just the JSON above.
             }
         }
 
-        return """
-Create a fill-in-the-blank sentence for the English word "${word.text}".
+        val e0 = options[0].escapeJson()
+        val e1 = options[1].escapeJson()
+        val e2 = options[2].escapeJson()
+        val e3 = options[3].escapeJson()
+        val eWord = word.text.escapeJson()
 
-Word: ${word.text}
+        return """
+Create a fill-in-the-blank sentence for the English word "$eWord".
+
+Word: $eWord
 Type: ${word.wordType ?: "unknown"}
 
 CRITICAL INSTRUCTION:
-- The correct answer "${word.text}" MUST be at position ${randomCorrectIndex} (index ${randomCorrectIndex})
+- The correct answer "$eWord" MUST be at position $randomCorrectIndex (index $randomCorrectIndex)
 - Put these options in this EXACT order:
-  Position 0: "${options[0]}"
-  Position 1: "${options[1]}"
-  Position 2: "${options[2]}"
-  Position 3: "${options[3]}"
+  Position 0: "$e0"
+  Position 1: "$e1"
+  Position 2: "$e2"
+  Position 3: "$e3"
 
 Requirements:
 - Create a natural English sentence with EXACTLY ONE blank: ____
 - Use only 4 underscores (____) for the blank, no more, no less
-- The sentence should clearly show where "${word.text}" belongs
+- The sentence should clearly show where "$eWord" belongs
 - Use EXACTLY these 4 options in the exact order shown above
-- The correctIndex MUST be ${randomCorrectIndex}
+- The correctIndex MUST be $randomCorrectIndex
 
 Example format: "She decided to ____ the meeting until next week."
 
 Respond ONLY with this EXACT JSON (no changes to options order):
-{"sentence": "A sentence with exactly ____ one blank.", "options": ["${options[0]}", "${options[1]}", "${options[2]}", "${options[3]}"], "correctIndex": ${randomCorrectIndex}}
+{"sentence": "A sentence with exactly ____ one blank.", "options": ["$e0", "$e1", "$e2", "$e3"], "correctIndex": $randomCorrectIndex}
 
 No markdown, no explanations, just the JSON above.
 """.trimIndent()
@@ -331,27 +345,34 @@ No markdown, no explanations, just the JSON above.
             }
         }
 
-        return """
-Create a definition matching question for the English word "${word.text}".
+        val e0 = definitions[0].escapeJson()
+        val e1 = definitions[1].escapeJson()
+        val e2 = definitions[2].escapeJson()
+        val e3 = definitions[3].escapeJson()
+        val eWord = word.text.escapeJson()
+        val eCorrectDef = correctDefinition.escapeJson()
 
-Word: ${word.text}
-Correct Definition: ${correctDefinition}
+        return """
+Create a definition matching question for the English word "$eWord".
+
+Word: $eWord
+Correct Definition: $eCorrectDef
 
 CRITICAL INSTRUCTION:
-- The correct definition "${correctDefinition}" MUST be at position ${randomCorrectIndex} (index ${randomCorrectIndex})
+- The correct definition "$eCorrectDef" MUST be at position $randomCorrectIndex (index $randomCorrectIndex)
 - Put these definitions in this EXACT order:
-  Position 0: "${definitions[0]}"
-  Position 1: "${definitions[1]}"
-  Position 2: "${definitions[2]}"
-  Position 3: "${definitions[3]}"
+  Position 0: "$e0"
+  Position 1: "$e1"
+  Position 2: "$e2"
+  Position 3: "$e3"
 
 Requirements:
-- Ask "Which definition matches '${word.text}'?"
+- Ask "Which definition matches '$eWord'?"
 - Use EXACTLY these 4 definitions in the exact order shown above
-- The correctIndex MUST be ${randomCorrectIndex}
+- The correctIndex MUST be $randomCorrectIndex
 
 Respond ONLY with this EXACT JSON (no changes to definitions order):
-{"definitions": ["${definitions[0]}", "${definitions[1]}", "${definitions[2]}", "${definitions[3]}"], "correctIndex": ${randomCorrectIndex}}
+{"definitions": ["$e0", "$e1", "$e2", "$e3"], "correctIndex": $randomCorrectIndex}
 
 No markdown, no explanations, just the JSON above.
 """.trimIndent()
@@ -376,12 +397,12 @@ No markdown, no explanations, just the JSON above.
             responseText?.let { cleanJsonResponse(it) }
         } catch (e: Exception) {
             when {
-                e.message?.contains("429") == true -> {
+                e is HttpException && e.code() == 429 -> {
                     Log.w("QuestionGenerator", "Rate limit hit, waiting longer...")
                     kotlinx.coroutines.delay(5000)
                     null
                 }
-                e.message?.contains("quota") == true -> {
+                e.message?.contains("quota", ignoreCase = true) == true -> {
                     Log.e("QuestionGenerator", "API quota exceeded")
                     null
                 }
@@ -393,13 +414,23 @@ No markdown, no explanations, just the JSON above.
         }
     }
 
-    private fun cleanJsonResponse(response: String): String {
-        val markdownRegex = "```(?:json)?\\s*(.+?)\\s*```"
-        val pattern = Pattern.compile(markdownRegex, Pattern.DOTALL)
-        val matcher = pattern.matcher(response)
+    private fun String.escapeJson(): String = replace("\\", "\\\\")
+        .replace("\"", "\\\"")
+        .replace("\n", "\\n")
+        .replace("\r", "\\r")
+        .replace("\t", "\\t")
 
-        return if (matcher.find()) {
-            matcher.group(1)?.trim() ?: response.trim()
+    private fun cleanJsonResponse(response: String): String {
+        val markdownPattern = Pattern.compile("```(?:json)?\\s*(.+?)\\s*```", Pattern.DOTALL)
+        val markdownMatcher = markdownPattern.matcher(response)
+        if (markdownMatcher.find()) {
+            return markdownMatcher.group(1)?.trim() ?: response.trim()
+        }
+
+        val jsonPattern = Pattern.compile("\\{.+\\}", Pattern.DOTALL)
+        val jsonMatcher = jsonPattern.matcher(response)
+        return if (jsonMatcher.find()) {
+            jsonMatcher.group()?.trim() ?: response.trim()
         } else {
             response.trim()
         }
@@ -418,7 +449,7 @@ No markdown, no explanations, just the JSON above.
             }
 
             if (options.size == 4 && correctIndex in 0..3) {
-                if (options[correctIndex] == word.translation) {
+                if (options[correctIndex].trim() == word.translation?.trim()) {
                     ReviewQuestionType.MultipleChoice(
                         word = word,
                         questionText = questionText,
@@ -459,7 +490,7 @@ No markdown, no explanations, just the JSON above.
             }
 
             if (options.size == 4 && correctIndex in 0..3 && sentence.contains("____")) {
-                if (options[correctIndex] == word.text) {
+                if (options[correctIndex].trim() == word.text.trim()) {
                     ReviewQuestionType.ContextSentence(
                         word = word,
                         sentence = sentence,
