@@ -14,9 +14,13 @@ import com.example.linguify.utils.UserLevel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -47,10 +51,12 @@ class WordRepository @Inject constructor(
     @Inject
     lateinit var wordsApiService: WordsApiService
 
-    private val wordCache = mutableMapOf<String, Word>()
-    private val wordSetCache = mutableMapOf<String, List<Word>>()
-    private val userWordStatusCache = mutableMapOf<String, WordLearningStatus>()
-    private var cachedWordCounts: WordCounts? = null
+    private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    private val wordCache = ConcurrentHashMap<String, Word>()
+    private val wordSetCache = ConcurrentHashMap<String, List<Word>>()
+    private val userWordStatusCache = ConcurrentHashMap<String, WordLearningStatus>()
+    @Volatile private var cachedWordCounts: WordCounts? = null
 
     data class WordCounts(
         val totalWords: Int = 0,
@@ -609,7 +615,7 @@ class WordRepository @Inject constructor(
                     val toLearnWords = allStatuses.count { it == WordLearningStatus.TO_LEARN }
                     val learningWords = allStatuses.count { it == WordLearningStatus.LEARNING }
 
-                    kotlinx.coroutines.runBlocking {
+                    repositoryScope.launch {
                         val totalWordCount = knownWords + toLearnWords + learningWords +
                                 getWordCountByCefrLevels(userLevel.cefrLevels)
 
