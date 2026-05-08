@@ -102,7 +102,7 @@
         android:id="@+id/flashcardFragment"
         android:name="com.example.linguify.ui.flashcard.FlashcardFragment"
         android:label="FlashcardFragment">
-        
+
         <action
             android:id="@+id/action_flashcardFragment_to_homeFragment"
             app:destination="@id/homeFragment"

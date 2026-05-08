@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.linguify.data.repositories.PexelsRepository
+import com.example.linguify.data.repositories.UserPreferencesRepository
 import com.example.linguify.data.repositories.WordRepository
 import com.example.linguify.model.Word
 import com.example.linguify.model.WordLearningStatus
@@ -16,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class WordListViewModel @Inject constructor(
     private val wordRepository: WordRepository,
-    private val pexelsRepository: PexelsRepository
+    private val pexelsRepository: PexelsRepository,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     private val _wordListState = MutableStateFlow<WordListState>(WordListState.Loading)
@@ -32,6 +34,7 @@ class WordListViewModel @Inject constructor(
     private var currentListType: String = ""
 
     private var cachedLearningWords: List<Word> = emptyList()
+    private var cachedUserLevelCode: String? = null
 
     private val pageSize = 15
     private var isLoading = false
@@ -65,7 +68,8 @@ class WordListViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val userLevelCode = "beginner"
+                val userLevelCode = cachedUserLevelCode
+                    ?: userPreferencesRepository.getUserLevel().code.also { cachedUserLevelCode = it }
 
                 val offset = if (reset) 0 else allWords.size
 
