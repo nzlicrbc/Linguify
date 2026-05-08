@@ -129,6 +129,17 @@ class WordDetailFragment : Fragment() {
                 }
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.wordImageUrl.collectLatest { pexelsImageUrl ->
+                if (pexelsImageUrl != null) {
+                    binding.ivWordImage.loadWithCache(pexelsImageUrl)
+                } else {
+                    binding.ivWordImage.setImageResource(R.drawable.placeholder_image)
+                }
+                binding.lottieImageLoading.visibility = View.GONE
+            }
+        }
     }
 
     private fun updateStatusButtonsUI(status: WordLearningStatus) {
@@ -165,17 +176,6 @@ class WordDetailFragment : Fragment() {
         } else {
             Log.d("WordDetailFragment", "No image URL found, loading from Pexels for: ${word.text}")
             viewModel.loadWordImageFromPexels(word.text)
-
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.wordImageUrl.collectLatest { pexelsImageUrl ->
-                    if (pexelsImageUrl != null) {
-                        binding.ivWordImage.loadWithCache(pexelsImageUrl)
-                    } else {
-                        binding.ivWordImage.setImageResource(R.drawable.placeholder_image)
-                    }
-                    binding.lottieImageLoading.visibility = View.GONE
-                }
-            }
         }
 
         binding.tvWordOverImage.text = word.text

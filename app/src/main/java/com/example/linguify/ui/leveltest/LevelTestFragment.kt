@@ -23,9 +23,6 @@ class LevelTestFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: LevelTestViewModel by viewModels()
-    private var currentQuestionIndex = 0
-    private lateinit var currentQuestion: TestQuestion
-    private var score = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,7 +56,7 @@ class LevelTestFragment : Fragment() {
                     is LevelTestViewModel.TestQuestionsState.Success -> {
                         hideLoading()
                         if (result.questions.isNotEmpty()) {
-                            updateQuestionUI(result.questions[currentQuestionIndex])
+                            updateQuestionUI(result.questions[viewModel.currentQuestionIndex.value])
                         } else {
                             showError(getString(R.string.no_questions_found))
                         }
@@ -70,6 +67,23 @@ class LevelTestFragment : Fragment() {
                     }
                     LevelTestViewModel.TestQuestionsState.Initial -> {
                     }
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.currentQuestionIndex.collect { index ->
+                val state = viewModel.testQuestions.value
+                if (state is LevelTestViewModel.TestQuestionsState.Success && index < state.questions.size) {
+                    updateQuestionUI(state.questions[index])
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.quizCompleted.collect { userLevel ->
+                if (userLevel != null) {
+                    showResults(userLevel)
                 }
             }
         }
@@ -96,16 +110,15 @@ class LevelTestFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        binding.btnOptionA.setOnClickListener { checkAnswer(0) }
-        binding.btnOptionB.setOnClickListener { checkAnswer(1) }
-        binding.btnOptionC.setOnClickListener { checkAnswer(2) }
-        binding.btnOptionD.setOnClickListener { checkAnswer(3) }
+        binding.btnOptionA.setOnClickListener { onOptionSelected(0) }
+        binding.btnOptionB.setOnClickListener { onOptionSelected(1) }
+        binding.btnOptionC.setOnClickListener { onOptionSelected(2) }
+        binding.btnOptionD.setOnClickListener { onOptionSelected(3) }
     }
 
     private fun updateQuestionUI(question: TestQuestion) {
-        currentQuestion = question
-        val questionsSize = viewModel.testQuestions.value.let { if (it is LevelTestViewModel.TestQuestionsState.Success) it.questions.size else 0 }
-        binding.tvQuestionNumber.text = getString(R.string.question_progress, currentQuestionIndex + 1, questionsSize)
+        val questionsSize = (viewModel.testQuestions.value as? LevelTestViewModel.TestQuestionsState.Success)?.questions?.size ?: 0
+        binding.tvQuestionNumber.text = getString(R.string.question_progress, viewModel.currentQuestionIndex.value + 1, questionsSize)
         binding.tvQuestion.text = question.questionText
         binding.btnOptionA.text = question.options[0]
         binding.btnOptionB.text = question.options[1]
@@ -118,42 +131,16 @@ class LevelTestFragment : Fragment() {
         binding.btnOptionD.isEnabled = true
     }
 
-    private fun checkAnswer(selectedOptionIndex: Int) {
+    private fun onOptionSelected(selectedOptionIndex: Int) {
         binding.btnOptionA.isEnabled = false
         binding.btnOptionB.isEnabled = false
         binding.btnOptionC.isEnabled = false
         binding.btnOptionD.isEnabled = false
 
-        if (selectedOptionIndex == currentQuestion.correctOptionIndex) {
-            score++
-        }
-
-        val questionsSize = viewModel.testQuestions.value.let {
-            if (it is LevelTestViewModel.TestQuestionsState.Success) it.questions.size else 0
-        }
-
-        if (currentQuestionIndex + 1 < questionsSize) {
-            currentQuestionIndex++
-            updateQuestionUI(
-                (viewModel.testQuestions.value as LevelTestViewModel.TestQuestionsState.Success)
-                    .questions[currentQuestionIndex]
-            )
-        } else {
-            finishTest()
-        }
+        viewModel.answerQuestion(selectedOptionIndex)
     }
 
-    private fun finishTest() {
-        val questionsSize = viewModel.testQuestions.value.let {
-            if (it is LevelTestViewModel.TestQuestionsState.Success) it.questions.size else 0
-        }
-
-        val userLevel = when {
-            score < questionsSize * 0.3 -> UserLevel.BEGINNER
-            score < questionsSize * 0.7 -> UserLevel.INTERMEDIATE
-            else -> UserLevel.ADVANCED
-        }
-
+    private fun showResults(userLevel: UserLevel) {
         binding.layoutQuestions.visibility = View.GONE
         binding.layoutResults.visibility = View.VISIBLE
         binding.tvTestResults.text = getString(R.string.test_completed, userLevel.displayName)

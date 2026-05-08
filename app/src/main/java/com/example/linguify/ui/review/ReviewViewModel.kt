@@ -8,6 +8,7 @@ import com.example.linguify.data.repositories.WordRepository
 import com.example.linguify.data.services.ReviewSessionGenerator
 import com.example.linguify.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -27,9 +28,11 @@ class ReviewViewModel @Inject constructor(
     private var currentSession: ReviewSession? = null
     private var correctAnswers = 0
     private val maxQuestionsPerSession = 10
+    private var loadingJob: Job? = null
 
     fun loadReviewSession() {
-        viewModelScope.launch {
+        loadingJob?.cancel()
+        loadingJob = viewModelScope.launch {
             _reviewState.value = ReviewState.Loading
 
             try {
@@ -71,8 +74,8 @@ class ReviewViewModel @Inject constructor(
                     return@launch
                 }
 
-                val successfulWords = questions.map { it.word.text }
-                val failedWords = selectedWords.filter { !successfulWords.contains(it.text) }
+                val successfulWordIds = questions.map { it.word.id }.toSet()
+                val failedWords = selectedWords.filter { it.id !in successfulWordIds }
 
                 if (failedWords.isNotEmpty()) {
                     Log.w("ReviewViewModel", "Failed to generate questions for: ${failedWords.map { it.text }}")
@@ -262,6 +265,18 @@ class ReviewViewModel @Inject constructor(
         val now = System.currentTimeMillis()
         val intervalMillis = difficulty.intervalMinutes * 60 * 1000L
         return now + intervalMillis
+    }
+
+    fun skipQuestion(questionIndex: Int) {
+        viewModelScope.launch {
+            val session = currentSession ?: return@launch
+            if (questionIndex >= session.questions.size) return@launch
+
+            val question = session.questions[questionIndex]
+            updateWordReviewStats(question.word, isCorrect = false)
+
+            _reviewState.value = ReviewState.QuestionAnswered(isCorrect = false)
+        }
     }
 
     fun completeSession() {

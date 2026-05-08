@@ -342,7 +342,7 @@ class ReviewFragment : Fragment() {
     }
 
     private fun skipQuestion() {
-        moveToNextQuestion()
+        viewModel.skipQuestion(currentQuestionIndex)
     }
 
     private fun showSessionResults(session: ReviewSession) {

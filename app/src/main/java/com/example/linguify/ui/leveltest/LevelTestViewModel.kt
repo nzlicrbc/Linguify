@@ -24,15 +24,49 @@ class LevelTestViewModel @Inject constructor(
     private val _levelSaveState = MutableStateFlow<LevelSaveState>(LevelSaveState.Initial)
     val levelSaveState: StateFlow<LevelSaveState> = _levelSaveState
 
+    private val _currentQuestionIndex = MutableStateFlow(0)
+    val currentQuestionIndex: StateFlow<Int> = _currentQuestionIndex
+
+    private val _quizCompleted = MutableStateFlow<UserLevel?>(null)
+    val quizCompleted: StateFlow<UserLevel?> = _quizCompleted
+
+    private var score = 0
+
     fun loadTestQuestions() {
         viewModelScope.launch {
             _testQuestions.value = TestQuestionsState.Loading
             try {
                 val questions = levelTestRepository.getTestQuestions()
+                _currentQuestionIndex.value = 0
+                score = 0
+                _quizCompleted.value = null
                 _testQuestions.value = TestQuestionsState.Success(questions)
             } catch (e: Exception) {
                 _testQuestions.value = TestQuestionsState.Error("An error occurred while loading questions: ${e.message}")
             }
+        }
+    }
+
+    fun answerQuestion(selectedOptionIndex: Int) {
+        val state = _testQuestions.value as? TestQuestionsState.Success ?: return
+        val questions = state.questions
+        val index = _currentQuestionIndex.value
+
+        if (index >= questions.size) return
+
+        if (selectedOptionIndex == questions[index].correctOptionIndex) {
+            score++
+        }
+
+        if (index + 1 < questions.size) {
+            _currentQuestionIndex.value = index + 1
+        } else {
+            val userLevel = when {
+                score < questions.size * 0.3 -> UserLevel.BEGINNER
+                score < questions.size * 0.7 -> UserLevel.INTERMEDIATE
+                else -> UserLevel.ADVANCED
+            }
+            _quizCompleted.value = userLevel
         }
     }
 
