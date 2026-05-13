@@ -30,6 +30,7 @@ class ReviewViewModel @Inject constructor(
     private var correctAnswers = 0
     private val maxQuestionsPerSession = 10
     private var loadingJob: Job? = null
+    private var questionAnsweredSeq = 0L
 
     fun loadReviewSession() {
         loadingJob?.cancel()
@@ -105,6 +106,7 @@ class ReviewViewModel @Inject constructor(
 
         currentSession = session
         correctAnswers = 0
+        questionAnsweredSeq = 0L
         _reviewState.value = ReviewState.SessionReady(session)
     }
 
@@ -188,7 +190,7 @@ class ReviewViewModel @Inject constructor(
 
             updateWordReviewStats(question.word, isCorrect)
 
-            _reviewState.value = ReviewState.QuestionAnswered(isCorrect)
+            _reviewState.value = ReviewState.QuestionAnswered(isCorrect, ++questionAnsweredSeq)
         }
     }
 
@@ -273,7 +275,7 @@ class ReviewViewModel @Inject constructor(
             val question = session.questions[questionIndex]
             updateWordReviewStats(question.word, isCorrect = false)
 
-            _reviewState.value = ReviewState.QuestionAnswered(isCorrect = false)
+            _reviewState.value = ReviewState.QuestionAnswered(isCorrect = false, seq = ++questionAnsweredSeq)
         }
     }
 
@@ -293,7 +295,7 @@ class ReviewViewModel @Inject constructor(
     sealed class ReviewState {
         object Loading : ReviewState()
         data class SessionReady(val session: ReviewSession) : ReviewState()
-        data class QuestionAnswered(val isCorrect: Boolean) : ReviewState()
+        data class QuestionAnswered(val isCorrect: Boolean, val seq: Long) : ReviewState()
         data class SessionCompleted(val session: ReviewSession) : ReviewState()
         data class Error(val message: String) : ReviewState()
     }

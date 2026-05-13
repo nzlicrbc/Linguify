@@ -1,10 +1,10 @@
 package com.example.linguify.ui.review
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -15,6 +15,7 @@ import com.example.linguify.R
 import com.example.linguify.databinding.*
 import com.example.linguify.model.ReviewQuestionType
 import com.example.linguify.model.ReviewSession
+import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -33,8 +34,10 @@ class ReviewFragment : Fragment() {
     private var questions: List<ReviewQuestionType> = emptyList()
     private var selectedOptionIndex: Int? = null
 
-    private var currentButtons: List<Button> = emptyList()
+    private var currentButtons: List<MaterialButton> = emptyList()
     private var pendingMoveToNext: Runnable? = null
+
+    private enum class OptionState { DEFAULT, SELECTED, CORRECT, WRONG }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -81,23 +84,14 @@ class ReviewFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.reviewState.collect { state ->
                 when (state) {
-                    is ReviewViewModel.ReviewState.Loading -> {
-                        showLoading()
-                    }
+                    is ReviewViewModel.ReviewState.Loading -> showLoading()
                     is ReviewViewModel.ReviewState.SessionReady -> {
                         hideLoading()
                         questions = state.session.questions
-                        if (questions.isNotEmpty()) {
-                            showQuestion(0)
-                        }
+                        if (questions.isNotEmpty()) showQuestion(0)
                     }
-                    is ReviewViewModel.ReviewState.QuestionAnswered -> {
-                        android.util.Log.d("ReviewFragment", "Question answered: isCorrect = ${state.isCorrect}")
-                        showAnswerFeedback(state.isCorrect)
-                    }
-                    is ReviewViewModel.ReviewState.SessionCompleted -> {
-                        showSessionResults(state.session)
-                    }
+                    is ReviewViewModel.ReviewState.QuestionAnswered -> showAnswerFeedback(state.isCorrect)
+                    is ReviewViewModel.ReviewState.SessionCompleted -> showSessionResults(state.session)
                     is ReviewViewModel.ReviewState.Error -> {
                         showError(state.message)
                         binding.btnSubmit.isEnabled = true
@@ -108,18 +102,13 @@ class ReviewFragment : Fragment() {
     }
 
     private fun showQuestion(index: Int) {
-        android.util.Log.d("ReviewFragment", "showQuestion called with index: $index")
-
         if (index >= questions.size) {
-            android.util.Log.d("ReviewFragment", "All questions completed, finishing session")
             viewModel.completeSession()
             return
         }
 
         currentQuestionIndex = index
         val question = questions[index]
-
-        android.util.Log.d("ReviewFragment", "Showing question ${index + 1}/${questions.size}: ${question.word.text}")
 
         resetQuestionUI()
 
@@ -128,43 +117,31 @@ class ReviewFragment : Fragment() {
         binding.tvProgress.text = "${index + 1}/${questions.size}"
 
         when (question) {
-            is ReviewQuestionType.MultipleChoice -> {
-                android.util.Log.d("ReviewFragment", "Setting up Multiple Choice question")
-                showMultipleChoice(question)
-            }
-            is ReviewQuestionType.ContextSentence -> {
-                android.util.Log.d("ReviewFragment", "Setting up Context Sentence question")
-                showContextSentence(question)
-            }
-            is ReviewQuestionType.Definition -> {
-                android.util.Log.d("ReviewFragment", "Setting up Definition question")
-                showDefinition(question)
-            }
+            is ReviewQuestionType.MultipleChoice -> showMultipleChoice(question)
+            is ReviewQuestionType.ContextSentence -> showContextSentence(question)
+            is ReviewQuestionType.Definition -> showDefinition(question)
         }
-
-        android.util.Log.d("ReviewFragment", "Question setup complete")
     }
 
     private fun showMultipleChoice(question: ReviewQuestionType.MultipleChoice) {
         binding.layoutQuestionContainer.isVisible = true
         binding.layoutMultipleChoice.isVisible = true
 
-        binding.tvQuestionText.text = question.questionText
+        binding.tvWordDisplay.isVisible = true
         binding.tvWordDisplay.text = question.word.text
+        binding.tvQuestionText.text = question.questionText
 
         binding.btnOption1.text = question.options[0]
         binding.btnOption2.text = question.options[1]
         binding.btnOption3.text = question.options[2]
         binding.btnOption4.text = question.options[3]
 
-        val buttons = listOf(
+        setupOptionButtons(listOf(
             binding.btnOption1,
             binding.btnOption2,
             binding.btnOption3,
             binding.btnOption4
-        )
-
-        setupOptionButtons(buttons)
+        ))
     }
 
     private fun showContextSentence(question: ReviewQuestionType.ContextSentence) {
@@ -174,20 +151,13 @@ class ReviewFragment : Fragment() {
         binding.tvQuestionText.text = getString(R.string.complete_the_sentence)
         _contextSentenceBinding?.tvSentence?.text = question.sentence
 
-        _contextSentenceBinding?.let { contextBinding ->
-            contextBinding.btnOption1.text = question.options[0]
-            contextBinding.btnOption2.text = question.options[1]
-            contextBinding.btnOption3.text = question.options[2]
-            contextBinding.btnOption4.text = question.options[3]
+        _contextSentenceBinding?.let { b ->
+            b.btnOption1.text = question.options[0]
+            b.btnOption2.text = question.options[1]
+            b.btnOption3.text = question.options[2]
+            b.btnOption4.text = question.options[3]
 
-            val buttons = listOf(
-                contextBinding.btnOption1,
-                contextBinding.btnOption2,
-                contextBinding.btnOption3,
-                contextBinding.btnOption4
-            )
-
-            setupOptionButtons(buttons)
+            setupOptionButtons(listOf(b.btnOption1, b.btnOption2, b.btnOption3, b.btnOption4))
         }
     }
 
@@ -197,93 +167,51 @@ class ReviewFragment : Fragment() {
 
         binding.tvQuestionText.text = getString(R.string.which_definition_matches, question.word.text)
 
-        _definitionBinding?.let { defBinding ->
-            defBinding.btnOption1.text = question.definitions[0]
-            defBinding.btnOption2.text = question.definitions[1]
-            defBinding.btnOption3.text = question.definitions[2]
-            defBinding.btnOption4.text = question.definitions[3]
+        _definitionBinding?.let { b ->
+            b.btnOption1.text = question.definitions[0]
+            b.btnOption2.text = question.definitions[1]
+            b.btnOption3.text = question.definitions[2]
+            b.btnOption4.text = question.definitions[3]
 
-            val buttons = listOf(
-                defBinding.btnOption1,
-                defBinding.btnOption2,
-                defBinding.btnOption3,
-                defBinding.btnOption4
-            )
-
-            setupOptionButtons(buttons)
+            setupOptionButtons(listOf(b.btnOption1, b.btnOption2, b.btnOption3, b.btnOption4))
         }
     }
 
-    private fun setupOptionButtons(buttons: List<Button>) {
-        android.util.Log.d("ReviewFragment", "Setting up ${buttons.size} option buttons")
-
+    private fun setupOptionButtons(buttons: List<MaterialButton>) {
         currentButtons = buttons
         selectedOptionIndex = null
 
         buttons.forEachIndexed { index, button ->
-            button.isSelected = false
             button.isClickable = true
-            button.setBackgroundColor(context?.getColor(android.R.color.transparent) ?: 0)
+            applyOptionState(button, OptionState.DEFAULT)
 
             button.setOnClickListener(null)
-
             button.setOnClickListener { view ->
-                android.util.Log.d("ReviewFragment", "Button $index clicked (text: ${button.text})")
-
-                if (view.isClickable) {
-                    selectOption(index, buttons)
-                }
+                if (view.isClickable) selectOption(index, buttons)
             }
-
-            android.util.Log.d("ReviewFragment", "Button $index setup: text='${button.text}', clickable=${button.isClickable}")
         }
 
         binding.btnSubmit.isEnabled = false
-        android.util.Log.d("ReviewFragment", "All ${buttons.size} buttons setup complete")
     }
 
-    private fun selectOption(index: Int, buttons: List<Button>) {
-        android.util.Log.d("ReviewFragment", "selectOption called with index: $index")
+    private fun selectOption(index: Int, buttons: List<MaterialButton>) {
+        if (selectedOptionIndex == index) return
 
-        if (selectedOptionIndex == index) {
-            android.util.Log.d("ReviewFragment", "Same option selected, ignoring")
-            return
-        }
-
-        buttons.forEach {
-            it.isSelected = false
-            it.setBackgroundColor(context?.getColor(android.R.color.transparent) ?: 0)
-        }
-
-        buttons[index].isSelected = true
-        buttons[index].setBackgroundColor(context?.getColor(android.R.color.holo_blue_light) ?: 0)
+        buttons.forEach { applyOptionState(it, OptionState.DEFAULT) }
+        applyOptionState(buttons[index], OptionState.SELECTED)
 
         selectedOptionIndex = index
         binding.btnSubmit.isEnabled = true
-
-        android.util.Log.d("ReviewFragment", "Option $index selected, selectedOptionIndex: $selectedOptionIndex, submit enabled: ${binding.btnSubmit.isEnabled}")
     }
 
     private fun submitAnswer() {
-        val selectedIndex = selectedOptionIndex
-
-        android.util.Log.d("ReviewFragment", "submitAnswer called - selectedIndex: $selectedIndex")
-        android.util.Log.d("ReviewFragment", "Submit button enabled: ${binding.btnSubmit.isEnabled}")
-        android.util.Log.d("ReviewFragment", "Current buttons size: ${currentButtons.size}")
-
-        if (selectedIndex == null) {
-            android.util.Log.w("ReviewFragment", "No option selected!")
+        val selectedIndex = selectedOptionIndex ?: run {
             Toast.makeText(context, getString(R.string.please_select_option), Toast.LENGTH_SHORT).show()
             return
         }
 
         binding.btnSubmit.isEnabled = false
-        android.util.Log.d("ReviewFragment", "Submit button disabled")
-
-        currentButtons.forEach {
-            it.isClickable = false
-            android.util.Log.d("ReviewFragment", "Button disabled: ${it.text}")
-        }
+        currentButtons.forEach { it.isClickable = false }
 
         val question = questions[currentQuestionIndex]
         val correctIndex = when (question) {
@@ -293,39 +221,52 @@ class ReviewFragment : Fragment() {
         }
 
         val isCorrect = selectedIndex == correctIndex
-
-        android.util.Log.d("ReviewFragment", "Answer check - selected: $selectedIndex, correct: $correctIndex, isCorrect: $isCorrect")
-
         showAnswerColors(selectedIndex, correctIndex, isCorrect)
 
-        android.util.Log.d("ReviewFragment", "Calling viewModel.submitAnswer")
         viewModel.submitAnswer(currentQuestionIndex, selectedIndex)
     }
 
     private fun showAnswerColors(selectedIndex: Int, correctIndex: Int, isCorrect: Boolean) {
         if (selectedIndex < currentButtons.size && correctIndex < currentButtons.size) {
             if (isCorrect) {
-                currentButtons[selectedIndex].setBackgroundColor(
-                    context?.getColor(android.R.color.holo_green_light) ?: 0
-                )
-                android.util.Log.d("ReviewFragment", "Correct answer - button $selectedIndex turned green")
+                applyOptionState(currentButtons[selectedIndex], OptionState.CORRECT)
             } else {
-                currentButtons[selectedIndex].setBackgroundColor(
-                    context?.getColor(android.R.color.holo_red_light) ?: 0
-                )
-                currentButtons[correctIndex].setBackgroundColor(
-                    context?.getColor(android.R.color.holo_green_light) ?: 0
-                )
-                android.util.Log.d("ReviewFragment", "Wrong answer - button $selectedIndex turned red, button $correctIndex turned green")
+                applyOptionState(currentButtons[selectedIndex], OptionState.WRONG)
+                applyOptionState(currentButtons[correctIndex], OptionState.CORRECT)
             }
         }
     }
 
+    private fun applyOptionState(button: MaterialButton, state: OptionState) {
+        val bgColor: Int
+        val strokeColor: Int
+        when (state) {
+            OptionState.DEFAULT -> {
+                bgColor = 0xFFFFFFFF.toInt()
+                strokeColor = 0xFFE2E8F0.toInt()
+            }
+            OptionState.SELECTED -> {
+                bgColor = 0xFFEFF6FF.toInt()
+                strokeColor = 0xFF3B82F6.toInt()
+            }
+            OptionState.CORRECT -> {
+                bgColor = 0xFFF0FDF4.toInt()
+                strokeColor = 0xFF22C55E.toInt()
+            }
+            OptionState.WRONG -> {
+                bgColor = 0xFFFFF1F2.toInt()
+                strokeColor = 0xFFF87171.toInt()
+            }
+        }
+        button.backgroundTintList = ColorStateList.valueOf(bgColor)
+        button.strokeColor = ColorStateList.valueOf(strokeColor)
+    }
+
     private fun showAnswerFeedback(isCorrect: Boolean) {
+        pendingMoveToNext?.let { binding.root.removeCallbacks(it) }
+
         val message = if (isCorrect) getString(R.string.answer_correct) else getString(R.string.answer_incorrect)
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-
-        android.util.Log.d("ReviewFragment", "Answer feedback: $message")
 
         val delay = if (isCorrect) 2000L else 3000L
         pendingMoveToNext = Runnable { moveToNextQuestion() }
@@ -333,11 +274,7 @@ class ReviewFragment : Fragment() {
     }
 
     private fun moveToNextQuestion() {
-        android.util.Log.d("ReviewFragment", "Moving to next question")
-
         currentQuestionIndex++
-        android.util.Log.d("ReviewFragment", "Current question index: $currentQuestionIndex")
-
         showQuestion(currentQuestionIndex)
     }
 
@@ -359,24 +296,20 @@ class ReviewFragment : Fragment() {
     }
 
     private fun resetQuestionUI() {
-        android.util.Log.d("ReviewFragment", "Resetting question UI")
-
         binding.layoutMultipleChoice.isVisible = false
         binding.layoutContextSentence.root.isVisible = false
         binding.layoutDefinition.root.isVisible = false
+        binding.tvWordDisplay.isVisible = false
 
         currentButtons.forEach { button ->
             button.setOnClickListener(null)
-            button.isSelected = false
             button.isClickable = true
-            button.setBackgroundColor(context?.getColor(android.R.color.transparent) ?: 0)
+            applyOptionState(button, OptionState.DEFAULT)
         }
         currentButtons = emptyList()
 
         selectedOptionIndex = null
         binding.btnSubmit.isEnabled = false
-
-        android.util.Log.d("ReviewFragment", "Question UI reset complete")
     }
 
     private fun showLoading() {

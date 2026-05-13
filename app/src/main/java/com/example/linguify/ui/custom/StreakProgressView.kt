@@ -273,9 +273,9 @@ class StreakProgressView @JvmOverloads constructor(
         drawFireIcon(canvas, fireIconX, textY)
 
         val streakText = when {
-            currentStreak == 0 -> "Streak başlat!"
-            currentStreak == 1 -> "1 gün streak"
-            else -> "$currentStreak gün streak"
+            currentStreak == 0 -> "Start your streak!"
+            currentStreak == 1 -> "1 day streak"
+            else -> "$currentStreak days streak"
         }
 
         val streakTextPaint = Paint().apply {
