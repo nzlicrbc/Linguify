@@ -37,7 +37,7 @@ object GeminiApiModule {
     @Named("gemini")
     fun provideGeminiRetrofit(@Named("gemini") okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://generativelanguage.googleapis.com/v1/")
+            .baseUrl("https://generativelanguage.googleapis.com/v1beta/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

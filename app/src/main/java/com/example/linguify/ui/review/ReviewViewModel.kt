@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class ReviewViewModel @Inject constructor(
@@ -215,56 +216,53 @@ class ReviewViewModel @Inject constructor(
 
     private suspend fun updateWordReviewStats(word: Word, isCorrect: Boolean) {
         try {
-            val existingStats = reviewRepository.getReviewStats(word.id)
+            val now = System.currentTimeMillis()
+            val existing = reviewRepository.getReviewStats(word.id)
 
-            val updatedStats = if (existingStats != null) {
-                if (isCorrect) {
-                    existingStats.copy(
-                        lastReviewDate = System.currentTimeMillis(),
-                        nextReviewDate = calculateNextReviewDate(existingStats.difficulty),
-                        correctAnswers = existingStats.correctAnswers + 1,
-                        difficulty = improveDifficulty(existingStats.difficulty)
-                    )
-                } else {
-                    existingStats.copy(
-                        lastReviewDate = System.currentTimeMillis(),
-                        nextReviewDate = calculateNextReviewDate(ReviewDifficulty.AGAIN),
-                        incorrectAnswers = existingStats.incorrectAnswers + 1,
-                        difficulty = ReviewDifficulty.AGAIN
-                    )
+            val currentInterval = existing?.interval ?: 0
+            val currentEase = existing?.easeFactor ?: 2.5
+
+            val (newInterval, newEase) = if (isCorrect) {
+                val ni = when (currentInterval) {
+                    0 -> 1
+                    1 -> 6
+                    else -> (currentInterval * currentEase).roundToInt()
                 }
+                Pair(ni, currentEase)
             } else {
-                ReviewStats(
-                    wordId = word.id,
-                    lastReviewDate = System.currentTimeMillis(),
-                    nextReviewDate = calculateNextReviewDate(if (isCorrect) ReviewDifficulty.GOOD else ReviewDifficulty.AGAIN),
-                    correctAnswers = if (isCorrect) 1 else 0,
-                    incorrectAnswers = if (isCorrect) 0 else 1,
-                    difficulty = if (isCorrect) ReviewDifficulty.GOOD else ReviewDifficulty.AGAIN
-                )
+                Pair(0, (currentEase - 0.2).coerceAtLeast(1.3))
             }
 
+            val nextReviewMillis = if (newInterval == 0) {
+                now + 10 * 60 * 1000L
+            } else {
+                now + newInterval * 24 * 60 * 60 * 1000L
+            }
+
+            val newDifficulty = when {
+                !isCorrect -> ReviewDifficulty.AGAIN
+                newInterval <= 1 -> ReviewDifficulty.HARD
+                newInterval <= 6 -> ReviewDifficulty.GOOD
+                else -> ReviewDifficulty.EASY
+            }
+
+            val updatedStats = ReviewStats(
+                wordId = word.id,
+                lastReviewDate = now,
+                nextReviewDate = nextReviewMillis,
+                correctAnswers = (existing?.correctAnswers ?: 0) + if (isCorrect) 1 else 0,
+                incorrectAnswers = (existing?.incorrectAnswers ?: 0) + if (!isCorrect) 1 else 0,
+                difficulty = newDifficulty,
+                interval = newInterval,
+                easeFactor = newEase
+            )
+
             reviewRepository.saveReviewStats(updatedStats)
-            Log.d("ReviewViewModel", "Updated review stats for ${word.text}: correct=${isCorrect}, difficulty=${updatedStats.difficulty}")
+            Log.d("ReviewViewModel", "SM-2 update for ${word.text}: correct=$isCorrect, interval=${newInterval}d, ease=%.2f, next=${newDifficulty.label}".format(newEase))
 
         } catch (e: Exception) {
             Log.e("ReviewViewModel", "Error updating review stats for ${word.text}: ${e.message}")
         }
-    }
-
-    private fun improveDifficulty(currentDifficulty: ReviewDifficulty): ReviewDifficulty {
-        return when (currentDifficulty) {
-            ReviewDifficulty.AGAIN -> ReviewDifficulty.HARD
-            ReviewDifficulty.HARD -> ReviewDifficulty.GOOD
-            ReviewDifficulty.GOOD -> ReviewDifficulty.EASY
-            ReviewDifficulty.EASY -> ReviewDifficulty.EASY
-        }
-    }
-
-    private fun calculateNextReviewDate(difficulty: ReviewDifficulty): Long {
-        val now = System.currentTimeMillis()
-        val intervalMillis = difficulty.intervalMinutes * 60 * 1000L
-        return now + intervalMillis
     }
 
     fun skipQuestion(questionIndex: Int) {
