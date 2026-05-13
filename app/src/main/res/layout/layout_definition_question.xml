@@ -9,30 +9,30 @@
         style="@style/DefinitionOptionButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:minHeight="72dp" />
+        android:layout_marginBottom="10dp"
+        android:minHeight="68dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnOption2"
         style="@style/DefinitionOptionButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:minHeight="72dp" />
+        android:layout_marginBottom="10dp"
+        android:minHeight="68dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnOption3"
         style="@style/DefinitionOptionButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:minHeight="72dp" />
+        android:layout_marginBottom="10dp"
+        android:minHeight="68dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnOption4"
         style="@style/DefinitionOptionButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="72dp" />
+        android:minHeight="68dp" />
 
 </LinearLayout>
