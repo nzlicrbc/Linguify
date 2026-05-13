@@ -16,6 +16,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.linguify.data.manager.LoginPreferencesManager
+import com.example.linguify.data.repositories.AuthRepository
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.auth.FirebaseAuth
@@ -32,6 +33,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var firebaseAuth: FirebaseAuth
+
+    @Inject
+    lateinit var authRepository: AuthRepository
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
@@ -65,9 +69,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkRememberMeAndNavigate() {
-        if (loginPreferencesManager.isLoggedIn()) {
-            val currentUser = firebaseAuth.currentUser
-            if (currentUser != null) {
+        if (!loginPreferencesManager.isLoggedIn()) return
+
+        firebaseAuth.addAuthStateListener(object : FirebaseAuth.AuthStateListener {
+            override fun onAuthStateChanged(auth: FirebaseAuth) {
+                auth.removeAuthStateListener(this)
+                if (auth.currentUser != null) {
+                    navController.navigate(R.id.homeFragment)
+                } else {
+                    attemptSilentLogin()
+                }
+            }
+        })
+    }
+
+    private fun attemptSilentLogin() {
+        val email = loginPreferencesManager.getSavedEmail()
+        val password = loginPreferencesManager.getSavedPassword()
+
+        if (email == null || password == null) {
+            loginPreferencesManager.clearLoginState()
+            return
+        }
+
+        lifecycleScope.launch(Dispatchers.Main) {
+            val result = authRepository.login(email, password)
+            if (result.isSuccess) {
                 navController.navigate(R.id.homeFragment)
             } else {
                 loginPreferencesManager.clearLoginState()
