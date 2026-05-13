@@ -382,6 +382,8 @@ class ReviewFragment : Fragment() {
     private fun showLoading() {
         binding.progressLoading.isVisible = true
         binding.layoutQuestionContainer.isVisible = false
+        binding.tvProgress.text = ""
+        binding.progressBar.progress = 0
     }
 
     private fun hideLoading() {
