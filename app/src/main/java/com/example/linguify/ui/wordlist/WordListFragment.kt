@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.linguify.R
 import com.example.linguify.databinding.FragmentWordListBinding
 import com.example.linguify.model.Word
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,13 +41,12 @@ class WordListFragment : Fragment() {
 
         val listType = arguments?.getString("list_type") ?: ""
 
-        val title = when (listType) {
-            "known" -> "Known Words"
-            "to_learn" -> "Words to Learn"
-            "learning" -> "Learning Words"
-            else -> "Word List"
+        binding.tvTitle.text = when (listType) {
+            "known" -> getString(R.string.word_list_title_known)
+            "to_learn" -> getString(R.string.word_list_title_to_learn)
+            "learning" -> getString(R.string.word_list_title_learning)
+            else -> getString(R.string.word_list_title)
         }
-        binding.tvTitle.text = title
 
         setupRecyclerView()
         setupSearch()
@@ -131,7 +131,7 @@ class WordListFragment : Fragment() {
                             if (state.words.isEmpty()) {
                                 binding.recyclerView.visibility = View.GONE
                                 binding.tvEmpty.visibility = View.VISIBLE
-                                binding.tvEmpty.text = "No words found"
+                                binding.tvEmpty.text = getString(R.string.no_words_found)
                             } else {
                                 binding.recyclerView.visibility = View.VISIBLE
                                 binding.tvEmpty.visibility = View.GONE
@@ -143,7 +143,7 @@ class WordListFragment : Fragment() {
                             binding.progressBar.visibility = View.GONE
                             binding.recyclerView.visibility = View.GONE
                             binding.tvEmpty.visibility = View.VISIBLE
-                            binding.tvEmpty.text = "Error: ${state.message}"
+                            binding.tvEmpty.text = getString(R.string.error_with_message, state.message)
                         }
                     }
                 }

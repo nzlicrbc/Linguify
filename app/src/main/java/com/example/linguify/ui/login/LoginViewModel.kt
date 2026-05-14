@@ -67,7 +67,7 @@ class LoginViewModel @Inject constructor(
                 savePreviousUserId(firebaseUser.uid)
 
                 if (rememberMe) {
-                    loginPreferencesManager.saveLoginState(email, true)
+                    loginPreferencesManager.saveLoginState(email, password, true)
                 }
 
                 _loginResult.value = LoginResult.Success(firebaseUser)

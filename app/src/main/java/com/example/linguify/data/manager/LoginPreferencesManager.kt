@@ -19,7 +19,15 @@ class LoginPreferencesManager @Inject constructor(
     }
 
     private val sharedPreferences: SharedPreferences by lazy {
-        try {
+        createEncryptedPrefs() ?: run {
+            context.deleteSharedPreferences(PREFERENCES_FILE_NAME)
+            createEncryptedPrefs()
+                ?: context.getSharedPreferences(PREFERENCES_FILE_NAME, Context.MODE_PRIVATE)
+        }
+    }
+
+    private fun createEncryptedPrefs(): SharedPreferences? {
+        return try {
             EncryptedSharedPreferences.create(
                 context,
                 PREFERENCES_FILE_NAME,
@@ -28,14 +36,15 @@ class LoginPreferencesManager @Inject constructor(
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             )
         } catch (e: Exception) {
-            context.getSharedPreferences(PREFERENCES_FILE_NAME_FALLBACK, Context.MODE_PRIVATE)
+            null
         }
     }
 
-    suspend fun saveLoginState(email: String, isLoggedIn: Boolean) {
+    suspend fun saveLoginState(email: String, password: String, isLoggedIn: Boolean) {
         withContext(Dispatchers.IO) {
             sharedPreferences.edit().apply {
                 putString(KEY_EMAIL, email)
+                putString(KEY_PASSWORD, password)
                 putBoolean(KEY_IS_LOGGED_IN, isLoggedIn)
                 apply()
             }
@@ -50,9 +59,14 @@ class LoginPreferencesManager @Inject constructor(
         return sharedPreferences.getString(KEY_EMAIL, null)
     }
 
+    fun getSavedPassword(): String? {
+        return sharedPreferences.getString(KEY_PASSWORD, null)
+    }
+
     fun clearLoginState() {
         sharedPreferences.edit().apply {
             remove(KEY_EMAIL)
+            remove(KEY_PASSWORD)
             remove(KEY_IS_LOGGED_IN)
             apply()
         }
@@ -61,7 +75,7 @@ class LoginPreferencesManager @Inject constructor(
     companion object {
         private const val PREFERENCES_FILE_NAME = "login_prefs"
         private const val KEY_EMAIL = "login_email"
+        private const val KEY_PASSWORD = "login_password"
         private const val KEY_IS_LOGGED_IN = "is_logged_in"
-        private const val PREFERENCES_FILE_NAME_FALLBACK = "login_prefs_fallback"
     }
 }

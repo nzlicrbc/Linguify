@@ -109,7 +109,7 @@ class UserPreferencesRepository @Inject constructor(
                 val target = userDoc.getLong("dailyWordTarget")?.toInt() ?: 5
 
                 sharedPreferences.edit()
-                    .putInt(KEY_DAILY_WORD_TARGET, target)
+                    .putInt(getUserSpecificKey(KEY_DAILY_WORD_TARGET), target)
                     .apply()
 
                 target

@@ -4,60 +4,71 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light">
+    android:background="#F1F5F9">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/layoutHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:orientation="vertical"
+        android:background="@color/white"
+        android:elevation="4dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="0dp"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
-            android:id="@+id/btnClose"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/circle_button_bg"
-            android:src="@drawable/ic_close"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/text_primary" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:paddingHorizontal="16dp">
 
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Review"
-            android:textColor="@color/text_primary"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <ImageButton
+                android:id="@+id/btnClose"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:background="@drawable/bg_circle_review_close"
+                android:src="@drawable/ic_close"
+                app:tint="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Review"
+                android:textColor="#1E293B"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/tvProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="#64748B"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ProgressBar
             android:id="@+id/progressBar"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="0dp"
-            android:layout_height="4dp"
-            android:layout_marginTop="16dp"
-            android:progressDrawable="@drawable/custom_progress"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnClose" />
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:layout_marginTop="10dp"
+            android:progressDrawable="@drawable/custom_progress" />
 
-        <TextView
-            android:id="@+id/tvProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="1/10"
-            android:textColor="@color/text_secondary"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/progressBar" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progressLoading"
@@ -81,15 +92,21 @@
             android:id="@+id/layoutQuestionContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:paddingHorizontal="20dp"
+            android:paddingTop="28dp"
+            android:paddingBottom="16dp">
 
             <TextView
                 android:id="@+id/tvWordDisplay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimary"
-                android:textSize="32sp"
+                android:background="@drawable/bg_word_pill"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="12dp"
+                android:textColor="#1D4ED8"
+                android:textSize="34sp"
                 android:textStyle="bold"
+                android:letterSpacing="0.01"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -99,19 +116,20 @@
                 android:id="@+id/tvQuestionText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="14dp"
                 android:gravity="center"
-                android:textColor="@color/text_primary"
-                android:textSize="18sp"
+                android:textColor="#475569"
+                android:textSize="15sp"
+                android:lineSpacingMultiplier="1.4"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/tvWordDisplay" />
 
             <LinearLayout
                 android:id="@+id/layoutMultipleChoice"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="22dp"
                 android:orientation="vertical"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -123,21 +141,21 @@
                     style="@style/QuestionOptionButton"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="10dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnOption2"
                     style="@style/QuestionOptionButton"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="10dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnOption3"
                     style="@style/QuestionOptionButton"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="10dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnOption4"
@@ -152,7 +170,7 @@
                 layout="@layout/layout_context_question"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="22dp"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -163,18 +181,11 @@
                 layout="@layout/layout_definition_question"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="22dp"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvQuestionText" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutMultipleChoice"
-                app:layout_constraintVertical_bias="1.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
@@ -183,18 +194,20 @@
         android:id="@+id/layoutBottomButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_light"
+        android:background="@color/white"
         android:elevation="8dp"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="28dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSkip"
             style="@style/OutlinedButton"
             android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="8dp"
+            android:layout_height="52dp"
+            android:layout_marginEnd="12dp"
             android:layout_weight="1"
             android:text="Skip" />
 
@@ -202,11 +215,10 @@
             android:id="@+id/btnSubmit"
             style="@style/PrimaryButton"
             android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
+            android:layout_height="52dp"
+            android:layout_weight="2"
             android:enabled="false"
-            android:text="Submit" />
+            android:text="Check" />
 
     </LinearLayout>
 

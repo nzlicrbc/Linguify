@@ -15,7 +15,7 @@ data class Part(
 )
 
 data class GeminiResponse(
-    val candidates: List<Candidate>
+    val candidates: List<Candidate>? = null
 )
 
 data class Candidate(

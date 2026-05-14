@@ -5,6 +5,10 @@ build/
 # Local configuration file (sdk path, etc)
 local.properties
 
+# API keys and secrets (never commit these)
+secrets.properties
+app/secrets.properties
+
 # Log/OS Files
 *.log
 

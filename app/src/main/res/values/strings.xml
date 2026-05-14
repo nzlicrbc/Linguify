@@ -72,4 +72,34 @@
 
     <string name="onboarding_title_3">Enhance Learning!</string>
     <string name="onboarding_description_3">Access helpful resources like dictionaries, grammar guides, and audiobooks to improve your English skills effectively.</string>
+
+    <!-- home screen -->
+    <string name="welcome_user">Welcome %1$s</string>
+    <string name="welcome">Welcome</string>
+    <string name="next_word_label">Next: %1$s</string>
+    <string name="words_to_discover">%1$d words to discover</string>
+
+    <!-- word list screen -->
+    <string name="word_list_title_known">Known Words</string>
+    <string name="word_list_title_to_learn">Words to Learn</string>
+    <string name="word_list_title_learning">Learning Words</string>
+    <string name="word_list_title">Word List</string>
+    <string name="no_words_found">No words found</string>
+    <string name="error_with_message">Error: %1$s</string>
+
+    <!-- level test screen -->
+    <string name="question_progress">Question %1$d/%2$d</string>
+    <string name="no_questions_found">No questions found. Please try again later.</string>
+    <string name="test_completed">Test completed!\nYour level: %1$s</string>
+
+    <!-- review screen -->
+    <string name="complete_the_sentence">Complete the sentence:</string>
+    <string name="which_definition_matches">Which definition matches \'%1$s\'?</string>
+    <string name="please_select_option">Please select an option</string>
+    <string name="answer_correct">Correct! ✓</string>
+    <string name="answer_incorrect">Incorrect ✗</string>
+    <string name="session_completed">Session completed!\nScore: %1$d/%2$d</string>
+
+    <!-- pronunciation -->
+    <string name="pronunciation_error">Pronunciation could not be played</string>
 </resources>

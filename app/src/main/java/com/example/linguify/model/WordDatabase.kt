@@ -1,9 +1,16 @@
 package com.example.linguify.model
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "words")
+@Entity(
+    tableName = "words",
+    indices = [
+        Index(value = ["cefrLevel"]),
+        Index(value = ["text"])
+    ]
+)
 data class WordEntity(
     @PrimaryKey val id: String,
     val text: String,

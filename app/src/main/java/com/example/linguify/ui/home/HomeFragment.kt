@@ -121,7 +121,7 @@ class HomeFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.nextWordToLearn.collectLatest { nextWord ->
                 if (nextWord.isNotEmpty()) {
-                    binding.tvLearnNext.text = "Next: $nextWord"
+                    binding.tvLearnNext.text = getString(R.string.next_word_label, nextWord)
                 } else {
                     binding.tvLearnNext.text = " "
                 }
@@ -147,7 +147,7 @@ class HomeFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.discoverableWordCount.collectLatest { count ->
                 if (count > 0) {
-                    binding.tvDiscoverRange.text = "$count words to discover"
+                    binding.tvDiscoverRange.text = getString(R.string.words_to_discover, count)
                 } else {
                     binding.tvDiscoverRange.text = " "
                 }
@@ -157,9 +157,9 @@ class HomeFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.username.collectLatest { username ->
                 if (username.isNotEmpty()) {
-                    binding.tvWelcome.text = "Welcome $username"
+                    binding.tvWelcome.text = getString(R.string.welcome_user, username)
                 } else {
-                    binding.tvWelcome.text = "Welcome"
+                    binding.tvWelcome.text = getString(R.string.welcome)
                 }
             }
         }
@@ -266,8 +266,7 @@ class HomeFragment : Fragment() {
         }
 
         binding.btnDiscover.setOnClickListener {
-            val bundle = bundleOf("load_to_learn" to false, "mode" to "discover")
-            findNavController().navigate(R.id.action_homeFragment_to_flashcardFragment, bundle)
+            findNavController().navigate(R.id.action_homeFragment_to_flashcardFragment)
         }
 
         binding.btnLearn.setOnClickListener {

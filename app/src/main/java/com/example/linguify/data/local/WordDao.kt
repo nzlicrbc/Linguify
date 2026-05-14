@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.example.linguify.model.WordEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -43,4 +44,10 @@ interface WordDao {
 
     @Query("SELECT * FROM words WHERE text = :text LIMIT 1")
     suspend fun getWordByText(text: String): WordEntity?
+
+    @Transaction
+    suspend fun replaceAllWords(words: List<WordEntity>) {
+        deleteAllWords()
+        insertWords(words)
+    }
 }
