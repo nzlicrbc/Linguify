@@ -3,7 +3,6 @@
 <p align="center">
   Kişiselleştirilmiş İngilizce kelime öğrenme uygulaması — seviyene göre kelimeler, flashcard, AI destekli tekrar ve görsel destekli öğrenme.
 </p>
----
 
 ## Demo
 
