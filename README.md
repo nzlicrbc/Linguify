@@ -41,7 +41,7 @@
   </tr>
   <tr>
     <td align="center" colspan="3">
-      <img src="https://github.com/user-attachments/assets/b8e28e17-fb56-46da-b6b7-e7ae71457204" alt="Tekrar" width="200" />
+      <img src="https://github.com/user-attachments/assets/b8e28e17-fb56-46da-b6b7-e7ae71457204" alt="Tekrar" width="200" /><br/>
       <sub>AI Tekrar</sub>
     </td>
   </tr>
@@ -87,6 +87,3 @@ Uygulama; yerel **Room** veritabanı, bulut senkronizasyonu için **Firebase Fir
 
 Giriş/Kayıt → Onboarding → Seviye testi → Ana sayfa → Öğren / Flashcard / Detay → AI Tekrar → Kelime listeleri
 
----
-
-<p align="center"><sub>Linguify © 2026</sub></p>
